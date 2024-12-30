@@ -1,5 +1,14 @@
 # TWEC
-twec/
+twec/*
+!/twec/README.md
+
+# Repo Specific Folders
+model/
+data/
+
+# VSCode
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
