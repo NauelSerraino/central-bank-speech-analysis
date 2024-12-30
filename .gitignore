@@ -1,5 +1,6 @@
 # TWEC
-twec/
+!twec
+twec/*
 !/twec/README.md
 
 # Repo Specific Folders
