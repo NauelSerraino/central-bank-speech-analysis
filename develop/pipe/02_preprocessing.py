@@ -49,7 +49,7 @@ def preprocess_sliced_corpus(input_dir, output_dir):
     for file in tqdm(os.listdir(input_dir), desc="Processing years"):
         input_file = os.path.join(input_dir, file)
         output_file = os.path.join(output_dir, file)
-        os.makedirs(os.path.join(output_dir) exist_ok=True)
+        os.makedirs(os.path.join(output_dir), exist_ok=True)
         preprocess_and_save(input_file, output_file)
 
 
