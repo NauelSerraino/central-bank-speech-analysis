@@ -10,9 +10,9 @@ from develop.utils.paths import DATA
 from develop.utils.toolbox import ToolBox
 
 catalog_path = "pg_catalog.csv"
-input_dir = "data/txt-files.tar/txt-files/cache/epub-pruned"
-output_dir = "data/txt-files.tar/txt-files/cache/epub-concatenated"
-output_all_dir = "data/txt-files.tar/txt-files/cache/epub-concatenated-all"
+input_dir = os.path.join(DATA, "00_pruned_corpus")
+output_dir = os.path.join(DATA, "01_sliced_corpus")
+output_all_dir = os.path.join(DATA, "01_sliced_corpus")
 
 def prepare_csv(path):
     catalog = pd.read_csv(os.path.join(DATA, path))
@@ -20,9 +20,10 @@ def prepare_csv(path):
     catalog["Issued"] = pd.to_datetime(catalog["Issued"])
     catalog["Issued"] = catalog["Issued"].dt.year
     catalog['Text#'] = "pg" + catalog['Text#'].astype(str)
-    print(catalog[['Text#', 'Title', 'Issued']].head())
+    catalog = catalog[catalog["Language"] == "en"]
     
-    catalog.to_csv(os.path.join(DATA, ("01_"+catalog_path)), index=False)
+    print(catalog[['Text#', 'Title', 'Issued']].head())
+    catalog.to_csv(os.path.join(DATA, ("01_" + catalog_path)), index=False)
     return catalog
     
 
@@ -38,26 +39,33 @@ def concatenate_files_by_year(df, input_dir, output_dir):
     """
     os.makedirs(output_dir, exist_ok=True)
     non_existent_files = 0
+    non_admissible_files = 0
 
     grouped = df.groupby("Issued")["Text#"]
+    valid_ids = set(df["Text#"])
 
     for year, file_ids in tqdm(grouped, desc="Concatenating files by year"):
         combined_text = ""
         
         for file_id in file_ids:
-            folder_id = re.search(r'\d+', file_id).group()
-            file_path = os.path.join(input_dir, folder_id, file_id + ".txt")
-            if os.path.exists(file_path):
-                with open(file_path, "r", encoding="utf-8") as f:
-                    combined_text += f.read() + "\n\n"  
+            if file_id in valid_ids:
+                folder_id = re.search(r'\d+', file_id).group()
+                file_path = os.path.join(input_dir, folder_id, file_id + ".txt")
+                breakpoint()
+                if os.path.exists(file_path):
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        combined_text += f.read() + "\n\n"  
+                else:
+                    non_existent_files += 1
             else:
-                non_existent_files += 1
+                non_admissible_files += 1
 
         output_file = os.path.join(output_dir, f"combined_{year}.txt")
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(combined_text)
         
     print(f"Number of non-existent files: {non_existent_files}")
+    print(f"Number of non-admissible files: {non_admissible_files}")
     
 def concat_all_txt(input_dir, output_dir):
     "Concatenate all the files in the input_dir into a single file in the output_dir incrementally"
@@ -80,7 +88,7 @@ def concat_all_txt(input_dir, output_dir):
     
     
 if __name__ == "__main__":
-    # df = prepare_csv(catalog_path)
-    # concatenate_files_by_year(df, input_dir, output_dir)
-    concat_all_txt(output_dir, output_all_dir)
+    df = prepare_csv(catalog_path)
+    concatenate_files_by_year(df, input_dir, output_dir)
+    # concat_all_txt(output_dir, output_all_dir)
     
