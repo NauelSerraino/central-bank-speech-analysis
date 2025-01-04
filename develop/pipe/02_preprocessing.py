@@ -22,19 +22,20 @@ def preprocess_and_save(file_path, output_file_path):
     lemmatizer = WordNetLemmatizer()
 
     total_lines = sum(1 for _ in open(file_path, 'r', encoding='utf-8'))
+    additional_punctuations = "‘’“”"
 
     with open(file_path, 'r', encoding='utf-8') as input_file, \
          open(output_file_path, 'w', encoding='utf-8') as output_file:
-             
+
         for line in tqdm(input_file, total=total_lines, desc="Processing lines"):
             if not line.strip() or line.isupper():
                 continue
 
             if re.match(r"^\s*CHAPTER \w+\.", line) or re.match(r"^\s*[0-9]+", line):
                 continue
-            
+
             line = line.lower()
-            line = re.sub(f"[{re.escape(string.punctuation)}]", " ", line)
+            line = re.sub(f"[{re.escape(string.punctuation + additional_punctuations)}]", " ", line)
             tokens = word_tokenize(line)
             tokens = [word for word in tokens if word not in stop_words]
             tokens = [lemmatizer.lemmatize(word) for word in tokens]
@@ -49,15 +50,9 @@ def preprocess_sliced_corpus(input_dir, output_dir):
     for file in tqdm(os.listdir(input_dir), desc="Processing years"):
         input_file = os.path.join(input_dir, file)
         output_file = os.path.join(output_dir, file)
-        os.makedirs(os.path.join(output_dir), exist_ok=True)
         preprocess_and_save(input_file, output_file)
 
-
 if __name__ == "__main__":
-    # file_path = os.path.join(DATA, "01_sliced_corpus", "combined_all.txt")
-    # output_file_path = os.path.join(DATA, "02_preprocessed_corpus", "combined_all.txt")
     input_dir = os.path.join(DATA, "01_sliced_corpus")
     output_dir = os.path.join(DATA, "02_preprocessed_corpus")
-    
-    # preprocess_and_save(file_path, output_file_path)
     preprocess_sliced_corpus(input_dir, output_dir)
