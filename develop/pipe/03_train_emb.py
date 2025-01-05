@@ -18,6 +18,5 @@ if __name__ == "__main__":
     aligner.train_compass(input_dir, overwrite=False)
 
     for file in os.listdir(input_dir):
-        breakpoint()
         input_file = os.path.join(input_dir, file)
         aligner.train_slice(input_file, save=True)
