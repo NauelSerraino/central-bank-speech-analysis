@@ -4,8 +4,8 @@ twec/*
 !/twec/README.md
 
 # Repo Specific Folders
-model/
-data/
+model/*
+data/*
 
 # VSCode
 .vscode
