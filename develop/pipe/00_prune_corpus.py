@@ -4,12 +4,18 @@ from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from tqdm import tqdm
 
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from utils.paths import DATA
+from utils.toolbox import ToolBox
+
 """
 Prune the corpus by removing direct references to the Gutenberg Project.
 """
 
 source_dir = "data/txt-files.tar/txt-files/cache/epub"
-target_dir = "data/txt-files.tar/txt-files/cache/epub-pruned"
+target_dir = os.path.join(DATA, "00_pruned_corpus")
 
 Path(target_dir).mkdir(parents=True, exist_ok=True)
 
@@ -50,15 +56,9 @@ def process_file(file_path, target_file_path):
         error_files += 1
         # print(f"Error processing {file_path}: {e}")
 
-def get_all_txt_files(directory):
-    for root, dirs, files in os.walk(directory):
-        dirs.sort(key=lambda x: int(x) if x.isdigit() else x)
-        for file in files:
-            if file.endswith('.txt'):
-                yield os.path.join(root, file)
-
 def process_all_files(limit=None):
-    txt_files = list(get_all_txt_files(source_dir))
+    tb = ToolBox()
+    txt_files = list(tb.get_all_txt_files(source_dir))
     if limit:
         txt_files = txt_files[:limit]
     for file in tqdm(txt_files, desc="Copying files"):
