@@ -6,9 +6,12 @@ import matplotlib.pyplot as plt
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.join(__file__, "../.."))))
 from develop.utils.paths import DATA_ALT
-from develop.utils.logger import get_logger
+from develop.utils.logger import LoggerManager
 
-logger = get_logger("slicer", "slicer.log")
+logger = LoggerManager(
+    name = "slicer", 
+    log_file = "slicer.log"
+    ).get_logger()
 
 def load_data(file_path: str) -> pd.DataFrame:
     """Load parquet DataFrame.

@@ -1,40 +1,50 @@
 import logging
 import os
-from datetime import datetime
+import time
+import psutil
 
-# Get absolute path to log directory
-LOG_DIR = os.path.join(os.path.dirname(__file__), "..", "logs")
-os.makedirs(LOG_DIR, exist_ok=True)
+class LoggerManager:
+    def __init__(self, name: str, log_file: str = "pipeline.log", level: int = logging.INFO):
+        """
+        Initializes the LoggerManager with a configured logger.
+        """
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(level)
 
-def get_logger(name: str, log_file: str = "pipeline.log", level: int = logging.INFO) -> logging.Logger:
-    """
-    Creates and returns a configured logger.
+        log_dir = os.path.join(os.path.dirname(__file__), "..", "logs")
+        os.makedirs(log_dir, exist_ok=True)
+        log_path = os.path.join(log_dir, log_file)
 
-    Args:
-        name (str): Name of the logger.
-        log_file (str): Log file name (within logs/).
-        level (int): Logging level (e.g. logging.INFO, logging.DEBUG).
+        if not self.logger.handlers:
+            # File handler
+            fh = logging.FileHandler(log_path, mode='a')
+            fh.setLevel(level)
+            fh.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 
-    Returns:
-        logging.Logger: Configured logger instance.
-    """
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
+            # Console handler
+            ch = logging.StreamHandler()
+            ch.setLevel(level)
+            ch.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
 
-    if not logger.handlers:
-        log_path = os.path.join(LOG_DIR, log_file)
+            self.logger.addHandler(fh)
+            self.logger.addHandler(ch)
 
-        # File handler
-        fh = logging.FileHandler(log_path, mode='a')
-        fh.setLevel(level)
-        fh.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    def get_logger(self) -> logging.Logger:
+        return self.logger
 
-        # Console handler
-        ch = logging.StreamHandler()
-        ch.setLevel(level)
-        ch.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
+    def log_resource_usage(self, function_name: str, start_time: float) -> None:
+        """
+        Logs memory, CPU, and execution time.
 
-        logger.addHandler(fh)
-        logger.addHandler(ch)
+        Args:
+            function_name (str): Name of the executed function.
+            start_time (float): Start time in seconds.
+        """
+        end_time = time.time()
+        cpu_usage = psutil.cpu_percent(interval=0.1)
+        memory_usage = psutil.virtual_memory().percent
+        execution_time = end_time - start_time
 
-    return logger
+        self.logger.info(
+            f"{function_name} executed in {execution_time:.4f} sec | CPU: {cpu_usage}% | Memory: {memory_usage}%"
+        )
