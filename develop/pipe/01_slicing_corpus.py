@@ -1,94 +1,85 @@
 import os
-import re
 import sys
+import logging
 import pandas as pd
-from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.join(__file__, "../.."))))
+from develop.utils.paths import DATA_ALT
+from develop.utils.logger import LoggerManager
 
-from develop.utils.paths import DATA
-from develop.utils.toolbox import ToolBox
+logger = LoggerManager(
+    name = "slicer", 
+    log_file = "slicer.log",
+    clear_log=False
+    ).get_logger()
 
-catalog_path = "pg_catalog.csv"
-input_dir = os.path.join(DATA, "00_pruned_corpus")
-output_dir = os.path.join(DATA, "01_sliced_corpus")
-output_all_dir = os.path.join(DATA, "01_sliced_corpus")
+def load_data(file_path: str) -> pd.DataFrame:
+    """Load parquet DataFrame.
 
-def prepare_csv(path):
-    catalog = pd.read_csv(os.path.join(DATA, path))
-        
-    catalog["Issued"] = pd.to_datetime(catalog["Issued"])
-    catalog["Issued"] = catalog["Issued"].dt.year
-    catalog['Text#'] = "pg" + catalog['Text#'].astype(str)
-    catalog = catalog[catalog["Language"] == "en"]
-    
-    print(catalog[['Text#', 'Title', 'Issued']].head())
-    catalog.to_csv(os.path.join(DATA, ("01_" + catalog_path)), index=False)
-    return catalog
-    
+    Args:
+        file_path (str): File of the parquet
 
-
-def concatenate_files_by_year(df, input_dir, output_dir):
+    Returns:
+        pd.DataFrame: DataFrame
     """
-    Concatenate text files based on their issuance year and save the result in the output directory.
+    logger.info(f"Loading {file_path}")
+    return pd.read_parquet(file_path)
 
-    Parameters:
-    - df: DataFrame containing metadata with 'Text' (file identifiers) and 'Issued' (year).
-    - input_dir: Path to the directory containing the individual text files.
-    - output_dir: Path to the directory where the concatenated files will be saved.
+def plot_year_distribution(df: pd.DataFrame) -> None:
+    """Plot the distribution of articles by year.
+
+    Args:
+        df (pd.DataFrame): DataFrame
     """
-    os.makedirs(output_dir, exist_ok=True)
-    non_existent_files = 0
-    non_admissible_files = 0
+    df["year"].value_counts().sort_index().plot(kind="bar")
+    plt.xlabel("Year")
+    plt.ylabel("Article Count")
+    plt.title("Distribution of Articles by Year")
+    plt.show()
+    logger.info("Plotting articles by year of publication.")
 
-    grouped = df.groupby("Issued")["Text#"]
-    valid_ids = set(df["Text#"])
+def preprocess_corpus(df: pd.DataFrame) -> pd.DataFrame:
+    """Merges the columns of title and excerpt.
 
-    for year, file_ids in tqdm(grouped, desc="Concatenating files by year"):
-        combined_text = ""
-        
-        for file_id in file_ids:
-            if file_id in valid_ids:
-                folder_id = re.search(r'\d+', file_id).group()
-                file_path = os.path.join(input_dir, folder_id, file_id + ".txt")
-                breakpoint()
-                if os.path.exists(file_path):
-                    with open(file_path, "r", encoding="utf-8") as f:
-                        combined_text += f.read() + "\n\n"  
-                else:
-                    non_existent_files += 1
-            else:
-                non_admissible_files += 1
+    Args:
+        df (pd.DataFrame): DataFrame
 
-        output_file = os.path.join(output_dir, f"combined_{year}.txt")
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(combined_text)
-        
-    print(f"Number of non-existent files: {non_existent_files}")
-    print(f"Number of non-admissible files: {non_admissible_files}")
-    
-def concat_all_txt(input_dir, output_dir):
-    "Concatenate all the files in the input_dir into a single file in the output_dir incrementally"
-    os.makedirs(output_dir, exist_ok=True)
-    output_file = os.path.join(output_dir, "combined_all.txt")
-    
-    with open(output_file, "w", encoding="utf-8") as out_f:
-        tb = ToolBox()
-        txt_files = list(tb.get_all_txt_files(input_dir))
-        
-        for file in tqdm(txt_files, desc="Concatenating files"):
-            try:
-                with open(file, "r", encoding="utf-8") as in_f:
-                    content = in_f.read()
-                    out_f.write(content + "\n\n")
-            except Exception as e:
-                print(f"Error reading {file}: {e}")
+    Returns:
+        pd.DataFrame: DataFrame
+    """
+    df = df.copy()
+    df["corpus"] = df["title"] + " " + df["excerpt"]
+    logger.info("Preprocessing done.")
+    return df
 
-    print(f"Concatenated text for all files saved to {output_file}")
-    
-    
+
+def save_corpus_by_year(df: pd.DataFrame, output_folder: str) -> None:
+    """Aggregates articles based on year of publication and saves them.
+
+    Args:
+        df (pd.DataFrame): _description_
+        output_folder (str): _description_
+    """
+    os.makedirs(output_folder, exist_ok=True)
+    for year, df_year in df.groupby("year"):
+        output_file = os.path.join(output_folder, f"{year}.txt")
+        df_year["corpus"].to_csv(output_file, index=False, header=False)
+    logger.info(f"Saved {df['year'].nunique()} corpus files in {output_folder}")
+
+
+def main() -> None:
+    """Triggers the pipeline.
+    """
+    input_path = os.path.join(DATA_ALT, "nyt_data.parquet")
+    output_folder = os.path.join(DATA_ALT, "01_sliced_corpus")
+    os.makedirs(output_folder, exist_ok=True)
+
+    df = load_data(input_path)
+    plot_year_distribution(df)
+    df = preprocess_corpus(df)
+    save_corpus_by_year(df, output_folder)
+
+
 if __name__ == "__main__":
-    df = prepare_csv(catalog_path)
-    concatenate_files_by_year(df, input_dir, output_dir)
-    # concat_all_txt(output_dir, output_all_dir)
-    
+    main()
