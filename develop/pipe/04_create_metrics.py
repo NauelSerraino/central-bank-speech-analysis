@@ -14,6 +14,10 @@ from scipy.stats import entropy
 import seaborn as sns
 from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
 import warnings
+
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.join(__file__, "../.."))))
+from develop.utils.logger import LoggerManager
 warnings.filterwarnings("ignore")
 
 import sys
@@ -22,12 +26,19 @@ from develop.utils.paths import DATA_ALT, MODEL
 
 nlp = spacy.load("en_core_web_sm")
 
+log_mgr = LoggerManager(
+    name = "create_metrics", 
+    log_file = "create_metrics.log",
+    clear_log = True
+    )
+logger = log_mgr.get_logger()
+
 def load_model(
     year: Optional[int] = None, 
     compass=False
     ):
     if compass:
-        print("Loading compass model")
+        logger.info("Loading compass model")
         return Word2Vec.load(os.path.join(MODEL, "compass.model"))
     else:
         return Word2Vec.load(os.path.join(MODEL, f"{year}.model"))
@@ -55,7 +66,7 @@ def assign_count_per_each_word(df, model):
 
 def run_divergences_pipe(df):
     
-    def custom_merge_dfs(group_df: pd.DataFrame, ref_df: pd.DataFrame) -> pd.DataFrame:
+    def custom_merge_dfs(group_df_: pd.DataFrame, ref_df_: pd.DataFrame) -> pd.DataFrame:
         """Generate the merged df of group and reference.
         It does also create an embedding column and a normalized version of it.
 
@@ -66,9 +77,6 @@ def run_divergences_pipe(df):
         Returns:
             pd.DataFrame: Merged DataFrame.
         """
-        breakpoint()
-        year = group_df.year.unique()[0]
-        ref_year = ref_df.year.unique()[0]
         scaler = MinMaxScaler()
         group_cols = [
             'embedding', 
@@ -81,8 +89,15 @@ def run_divergences_pipe(df):
             'count'
             ]
         
+        ref_df = ref_df_.copy()
+        group_df = group_df_.copy()
+        
+        year = group_df.year.unique()[0]
+        ref_year = ref_df.year.unique()[0]
+        
         group_df['embedding'] = group_df.iloc[:, 1:-1].values.tolist()
         group_df['embedding_min_max_norm'] = scaler.fit_transform(group_df.iloc[:, 1:-1]).tolist()
+
         ref_df['embedding_t-1'] = ref_df.iloc[:, 1:-1].values.tolist()
         ref_df['embedding_t-1_min_max_norm'] = scaler.fit_transform(ref_df.iloc[:, 1:-1]).tolist()
 
@@ -199,7 +214,6 @@ def run_divergences_pipe(df):
         return df
     
     def _assing_reference_flag(df):
-        breakpoint()
         df['word_present_both'] = np.where(
             df['embedding_t-1'].isnull() & df['embedding_t-1_min_max_norm'].isnull(),
             False,
@@ -210,16 +224,6 @@ def run_divergences_pipe(df):
     def _pop_embeddings(df):
         df = df.drop(columns=['embedding', 'embedding_t-1', 'embedding_min_max_norm', 'embedding_t-1_min_max_norm'])
         return df
-    
-    def _assign_year(df, year, ref_year):
-        df['year'] = year
-        df['ref_year'] = ref_year
-        return df
-
-    def _check_consecutive_years(list_years):
-        return all(
-            list_years[i] + 1 == list_years[i + 1] for i in range(len(list_years) - 1)
-            )
 
     references = ['t-1', 't_0']
     groups = df.groupby('year')
@@ -227,7 +231,7 @@ def run_divergences_pipe(df):
     for ref_name in references:
         if ref_name == 't-1':
             results_chain = []
-            years = list(df['year'].unique())
+            # years = list(df['year'].unique())
             prev_year = None 
             for year, group in tqdm(groups, desc="Computing Cosine Similarities: t-1"):    
                 if (year == 1920):
@@ -238,9 +242,9 @@ def run_divergences_pipe(df):
                         continue
                      
                 ref_year = year - 1
-                ref_df = df[df['year'] == ref_year]
+                ref_df = df[df['year'] == ref_year].copy()
                 
-                breakpoint()
+                logger.info(f"Year under analysis [T-1]: {year}")
                 merged = custom_merge_dfs(group, ref_df) 
                 single_df_chain = _compute_metrics(merged)
                 single_df_chain = _compute_descriptive_statistics(merged)
@@ -257,7 +261,8 @@ def run_divergences_pipe(df):
             for year, group in tqdm(groups, desc="Computing Cosine Similarities: t_0"):
                 if year == 1920:
                     continue
-            
+                
+                logger.info(f"Year under analysis [T_0]: {year}")
                 merged = custom_merge_dfs(group, ref_df)
                 single_df_fixed = _compute_metrics(merged)
                 single_df_fixed = _compute_descriptive_statistics(merged)
@@ -285,9 +290,9 @@ def cached_apply_pos_ner(x):
 def process_year_range(start_year, end_year, output_dir):
     """Processes embeddings for a given time range and saves the results."""
     
-    print(f"Processing years {start_year}-{end_year}...")
+    logger.info(f"Processing years {start_year}-{end_year}...")
     years = list(range(start_year, end_year + 1))
-    print(f"Years: {years}")
+    logger.info(f"Years: {years}")
     dfs_dict = {}
 
     for year in tqdm(years, desc=f"Loading and word count {start_year}-{end_year}"):
@@ -296,7 +301,7 @@ def process_year_range(start_year, end_year, output_dir):
         dfs_dict[year] = assign_count_per_each_word(df, model)
 
     df = merge_dfs(dfs_dict)
-    breakpoint()
+
     df_chain, df_fixed = run_divergences_pipe(df)
     # TODO: Uncomment this line to add POS and NER tags
     # df_chain[['pos_tags', 'ner_tags']] = df_chain['index'].map(cached_apply_pos_ner).apply(pd.Series)
@@ -309,12 +314,12 @@ def process_year_range(start_year, end_year, output_dir):
     df_chain.to_csv(df_chain_path, index=False, sep='|')
     df_fixed.to_csv(df_fixed_path, index=False, sep='|')
 
-    print(f"Saved: {df_chain_path}")
-    print(f"Saved: {df_fixed_path}")
+    logger.info(f"Saved: {df_chain_path}")
+    logger.info(f"Saved: {df_fixed_path}")
 
 
 if __name__ == "__main__":
-    output_dir = os.path.join(DATA_ALT, "05_information_metrics")
+    output_dir = os.path.join(DATA_ALT, "04_create_metrics")
 
     start_year = 1920
     end_year = 2020
