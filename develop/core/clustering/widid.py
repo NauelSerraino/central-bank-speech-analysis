@@ -1,0 +1,1 @@
+# Implementation of "What Is Done Is Done" techinque for clustering words change in semantic shift.
