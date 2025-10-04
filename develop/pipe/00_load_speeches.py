@@ -8,6 +8,8 @@ from nltk.corpus import stopwords
 from nltk import download
 from gensim.models.phrases import Phrases, Phraser
 
+from develop.utils.paths import DATA
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 download('stopwords')
@@ -94,7 +96,7 @@ logging.info("Applying bigram model...")
 df['mistral_ocr_preprocessed'] = apply_bigram_model_to_docs(docs_paragraphs_tokens, bigram_model)
 
 logging.info("Saving results...")
-output_folder = os.path.join("your_data_alt_path", "02_preprocessed_corpus")
+output_folder = os.path.join(DATA, "00_preprocessed_corpus")
 save_texts_by_year_and_region(df, output_folder)
 
 logging.info("Done.")

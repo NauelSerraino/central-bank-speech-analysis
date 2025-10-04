@@ -1,38 +1,19 @@
-from asyncio import sleep
+import ast
 import os
-from sklearn.preprocessing import MinMaxScaler
 import spacy
 from typing import Optional
-from matplotlib import pyplot as plt
-import numpy as np
 import pandas as pd
 from gensim.models.word2vec import Word2Vec
-from scipy import stats
 from tqdm import tqdm
-from scipy.stats import bernoulli
-from scipy.stats import entropy
-import seaborn as sns
-from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
 import warnings
 
-import sys
-
-from develop.core.fixed_chain.distance_measures import EmbeddingDrift
-from develop.core.fixed_chain.factory import drift_factory
-from develop.core.fixed_chain.neighboor_measures import JaccardDrift
 from develop.core.metrics.cosine_distance import CosineMetric
-from develop.core.metrics.euclidean import EuclideanMetric
-from develop.core.metrics.metric_type import MetricType
-from develop.core.metrics.wrd import WRDMetric
-from develop.core.region_metrics.metrics import SingletonMetricWrapper
 from develop.core.vectors_flags.norm import EmbeddingNormComputer
-from develop.core.vectors_flags.normality import EmbeddingNormalityChecker
 from develop.utils.toolbox import reorder_columns
 from develop.utils.logger import LoggerManager
 warnings.filterwarnings("ignore")
 
-import sys
-from develop.utils.paths import DATA_ALT, MODEL, MODEL_USA, MODEL_EU
+from develop.utils.paths import DATA, MODEL
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -79,34 +60,22 @@ def process_year_range(start_year, end_year, output_dir, input_dir):
             model, year, region=region, compass_vocabulary=compass_vocabulary)
 
     df = concat_dfs(dfs_dict)
-    
-    normality = EmbeddingNormalityChecker()
-    df = normality.check(df)
-    
+      
     norm = EmbeddingNormComputer()
-    df = norm.compute(df)
+    df = norm.compute(df[:])
     
-    metric_wrapper = SingletonMetricWrapper(metric=CosineMetric())
-    metric_wrapper.load_embeddings(df)
-    df = metric_wrapper.compute_distances_for_df(df)
+    df_path = os.path.join(output_dir, f"df_{start_year}-{end_year}.parquet")
+    df['most_similar_cosine'] = df['most_similar_cosine'].apply(
+        lambda x: ast.literal_eval(x) if isinstance(x, str) and x.strip() else None
+    ) # sanitize most_similar_cosine column
 
-    # metric = drift_factory("embedding", MetricType.COSINE.value)
-    # df_chain = metric.compute(df, mode="chain")
-    # df_fixed = metric.compute(df, mode="fixed")
-
-    # jaccard = drift_factory("jaccard", MetricType.COSINE.value, top_k=10)
-    # df_chain = jaccard.compute(df_chain, mode="chain")
-    # df_fixed = jaccard.compute(df_fixed, mode="fixed")
-    
-    os.makedirs(output_dir, exist_ok=True)
-    df_path = os.path.join(output_dir, f"df_{start_year}-{end_year}.csv")
-    df.to_csv(df_path, index=False, sep='|')
+    df.to_parquet(df_path, index=False)
     logger.info(f"Saved: {df_path}")
 
 
 if __name__ == "__main__":
-    output_dir = os.path.join(DATA_ALT, "04_create_metrics")
-    start_year = 1998
+    output_dir = os.path.join(DATA, "04_create_metrics")
+    start_year = 2000
     end_year = 2024
 
     process_year_range(start_year, end_year, output_dir, MODEL)
