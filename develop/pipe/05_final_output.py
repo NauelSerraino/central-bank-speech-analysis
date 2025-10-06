@@ -60,7 +60,6 @@ topic_to_words = dict(zip(mapping_words['topic'], mapping_words['word']))
 df['word'] = df['topic'].map(topic_to_words)
 
 assigner = LabelAssigner.get_instance()
-assigner._threshold = 0.4
 df = assigner.assign_labels(df)
 df['region'] = df['region'].map(region_to_bank)
 df['short_topic'] = df['label'].map(synthetic_mapping)
@@ -84,7 +83,7 @@ def prepare_groupby_df(df):
           .sum()
           .reset_index()
     )
-    df = df[df['year'] >= 2000]
+    df = df[(df['year'] >= 2000) & (df['year'] <= 2024)]
     df = df[~df['short_topic'].isna()]
     return df
 
@@ -209,6 +208,8 @@ region_distances = compute_region_cosine_distances(centroids_ECB, centroids_Fed)
 
 def plot_topic_distances_wide(df, mode='per topic'):
     heatmap_data = df.pivot(index='year', columns='topic', values='cosine_distance').fillna(0)
+    
+    
     if mode=='per topic':
         heatmap_data = heatmap_data.apply(lambda x: (x-x.min())/(x.max()-x.min()) if x.max()>x.min() else 0, axis=0)
     elif mode=='per year':
@@ -218,6 +219,11 @@ def plot_topic_distances_wide(df, mode='per topic'):
         norm_flat = (flat - flat.min())/(flat.max()-flat.min())
         heatmap_data = pd.DataFrame(norm_flat.reshape(heatmap_data.shape),
                                     columns=heatmap_data.columns, index=heatmap_data.index)
+           
+    # SORT VALUES BY AVERAGE PER TOPIC 
+    topic_order = heatmap_data.mean(axis=0).sort_values(ascending=False).index.to_list()
+    heatmap_data = heatmap_data[topic_order]
+    
     plt.figure(figsize=(12, len(heatmap_data.columns)*0.5+2))
     sns.heatmap(heatmap_data.T, cmap='Reds', linewidths=0.5, linecolor='white',
                 cbar_kws={'label': f'Normalized Distance ({mode})'})
@@ -249,6 +255,11 @@ def compute_topic_shifts(centroids, mode='fixed'):
 def plot_topic_shifts(df, mode='fixed', region=None, color='red'):
     heatmap_data = df.pivot(index='topic', columns='year', values='cosine_distance')
     heatmap_data = heatmap_data.apply(lambda x: (x - x.min()) / (x.max() - x.min()) if x.max() > x.min() else 0, axis=1)
+    
+    # SORT VALUES BY AVERAGE PER TOPIC
+    topic_order = heatmap_data.T.mean(axis=0).sort_values(ascending=False).index
+    heatmap_data = heatmap_data.T[topic_order].T
+    
     color_map_dict = {'red': 'Reds','blue': 'Blues','orange': 'Oranges','green': 'Greens','purple': 'Purples'}
     cmap = color_map_dict.get(color.lower(), 'Reds')
     plt.figure(figsize=(12, len(heatmap_data) * 0.5 + 2))
