@@ -1,11 +1,14 @@
+from itertools import combinations
 import os
 import ast
+from typing import List
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics.pairwise import cosine_distances
 import warnings
+from matplotlib.ticker import MaxNLocator
 
 from develop.utils.paths import DATA
 from develop.core.vectors_flags.label_assinger import LabelAssigner
@@ -120,9 +123,133 @@ def plot_stacked_topics_normalized(df, region, topic_colors=TOPIC_COLORS):
     plt.xlabel("Year", fontsize=fontsize)
     plt.legend(title="Topics", bbox_to_anchor=(1.05, 1), fontsize=fontsize)
     save_fig(f"stacked_topics_{region}")
+    
+    return pivot
 
-plot_stacked_topics_normalized(topics_df, "Fed")
-plot_stacked_topics_normalized(topics_df, "ECB")
+pivot_fed = plot_stacked_topics_normalized(topics_df, "Fed")
+pivot_ecb = plot_stacked_topics_normalized(topics_df, "ECB")
+
+def plot_pairwise_frequencies(fed: pd.DataFrame, ecb: pd.DataFrame) -> None:
+    """
+    Plot pairwise topic frequencies for Fed vs ECB across time, sorted alphabetically.
+
+    Aesthetics:
+    - ECB (Europe): deep blue solid line
+    - Fed (US): warm orange dashed line
+    - Soft shading for divergence
+    - Unified legend on right
+    - Subtle typography and minimalist grid
+    """
+
+    # --- Base style ---
+    plt.style.use("seaborn-v0_8-whitegrid")
+    plt.rcParams.update({
+        "font.family": "DejaVu Sans",
+        "font.size": 10,
+        "axes.edgecolor": "#E0E0E0",
+        "axes.linewidth": 0.8,
+        "axes.labelcolor": "#333333",
+        "axes.titleweight": "semibold",
+        "axes.titlesize": 11,
+        "xtick.color": "#555555",
+        "ytick.color": "#555555",
+        "grid.color": "#EAEAEA",
+        "grid.linestyle": "-",
+        "grid.linewidth": 0.7,
+        "legend.edgecolor": "none",
+    })
+
+    cols = sorted(fed.columns)
+    n = len(cols)
+    ncols = 3
+    nrows = (n + ncols - 1) // ncols
+
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(17, nrows * 3.4))
+    axes = axes.flatten()
+
+    # --- Colors and styles ---
+    color_ecb = "#005EB8"       # deep European blue
+    color_fed = "#E67E22"       # warm orange
+    fill_color = "#B0B0B0"
+
+    for i, col in enumerate(cols):
+        ax = axes[i]
+        ax.plot(ecb.index, ecb[col], color=color_ecb, label='ECB', linewidth=2.5, alpha=0.9)
+        ax.plot(fed.index, fed[col], color=color_fed, label='Fed', linewidth=2.5, linestyle='--', alpha=0.9)
+        ax.fill_between(fed.index, ecb[col], fed[col], color=fill_color, alpha=0.12)
+        ax.set_title(col, fontsize=11, fontweight='semibold', pad=6, color="#222222")
+        ax.tick_params(axis='x', rotation=45, labelsize=9)
+        ax.tick_params(axis='y', labelsize=9)
+        ax.yaxis.set_major_locator(MaxNLocator(4))
+        ax.grid(alpha=0.25)
+        ax.set_facecolor("#FAFAFA")
+
+    # Hide unused axes
+    for j in range(i + 1, len(axes)):
+        axes[j].set_visible(False)
+
+    # --- Unified legend on right ---
+    handles, labels = ax.get_legend_handles_labels()
+    fig.legend(
+        handles, labels,
+        loc='center right',
+        bbox_to_anchor=(0.89, 0.12),
+        fontsize=20,
+        title_fontsize=20,
+    )
+
+    plt.tight_layout(pad=1.5)
+    save_fig(f"pairwise")
+
+    
+plot_pairwise_frequencies(pivot_fed, pivot_ecb)
+
+
+import numpy as np
+import pandas as pd
+
+def shannon_normalized(x: np.ndarray) -> float:
+    """
+    Normalized Shannon entropy:
+    H_norm = -sum(p_i * log(p_i)) / log(k)
+    where k = number of topics, p_i = topic frequencies (must sum to 1)
+    """
+    x = np.array(x, dtype=float)
+    x = x / x.sum()  # ensure normalization
+    x = x[x > 0]     # avoid log(0)
+    k = len(x)
+    H = -np.sum(x * np.log(x)) / np.log(k)
+    return H
+
+def yearly_shannon(df: pd.DataFrame) -> pd.Series:
+    """
+    Compute yearly normalized Shannon entropy for each row.
+    Assumes rows = years, columns = topics.
+    """
+    return df.apply(lambda row: shannon_normalized(row.values), axis=1)
+
+
+def plot_yearly_shannon(fed: pd.DataFrame, ecb: pd.DataFrame) -> None:
+    sh_fed = yearly_shannon(fed)
+    sh_ecb = yearly_shannon(ecb)
+
+    plt.style.use("seaborn-v0_8-whitegrid")
+    plt.figure(figsize=(10, 3.5))
+
+    plt.plot(sh_ecb.index, sh_ecb, color='#005EB8', marker='o', linewidth=2, label='ECB', alpha=0.9)
+    plt.plot(sh_fed.index, sh_fed, color='#E67E22', marker='o', linewidth=2, label='Fed', alpha=0.9, linestyle='--')
+
+    plt.xlabel("Year", fontsize=10)
+    plt.ylabel("Normalized Shannon Entropy", fontsize=10)
+    plt.xticks(rotation=45, fontsize=9)
+    plt.yticks(fontsize=9)
+    plt.grid(alpha=0.3)
+    plt.legend(fontsize=10, title_fontsize=10)
+    plt.tight_layout()
+    save_fig("shannon-graph")
+
+
+plot_yearly_shannon(pivot_fed, pivot_ecb)
 
 # ----------------------
 # LOAD EMBEDDINGS
