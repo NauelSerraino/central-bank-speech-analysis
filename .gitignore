@@ -6,6 +6,7 @@
 # Repo Specific Folders
 model/*
 data/*
+.history
 
 # VSCode
 .vscode
