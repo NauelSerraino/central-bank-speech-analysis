@@ -2,6 +2,7 @@ import os
 import warnings
 import numpy as np
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.ticker import MaxNLocator
@@ -280,27 +281,53 @@ def plot_shannon_entropy(fed, ecb):
     save_fig("shannon-graph")
 
 
-def plot_unique_words(emb):
+def _unique_words_pivot(emb):
     counts = (
         emb.groupby(["year", "region"])["word"].nunique()
            .reset_index()
            .query("year >= 2000")
     )
-    pivot   = counts.pivot(index="year", columns="region", values="word").fillna(0)
-    years   = pivot.index.values
-    regions = pivot.columns
+    pivot = counts.pivot(index="year", columns="region", values="word").fillna(0)
+    pivot.index = pivot.index.astype(int)
+    return pivot
+
+
+def plot_unique_words(emb_bertopic):
+    emb_raw = pd.read_parquet(os.path.join(METRICS, "df_2000-2025.parquet"))
+    emb_raw["region"] = emb_raw["region"].map(REGION_MAP)
+
+    raw_pivot  = _unique_words_pivot(emb_raw)
+    bert_pivot = _unique_words_pivot(emb_bertopic).reindex(raw_pivot.index, fill_value=0)
+
+    regions = raw_pivot.columns.tolist()
+    years   = raw_pivot.index.values
     x       = np.arange(len(years))
     width   = 0.6 / len(regions)
 
-    plt.figure(figsize=(12, 6))
+    colors = {"ECB": "#2166ac", "Fed": "#d6604d"}
+
+    fig, ax = plt.subplots(figsize=(14, 6))
     for i, region in enumerate(regions):
-        plt.bar(x + i * width, pivot[region], width, label=region)
-    plt.xticks(x + width * (len(regions) - 1) / 2, years, rotation=90)
-    plt.xlabel("Year")
-    plt.ylabel("Unique words")
-    plt.title("Unique Words by Year and Institution")
-    plt.legend(title="Institution")
-    plt.grid(True, axis="y", linestyle="--", alpha=0.7)
+        offset  = x + i * width
+        covered = bert_pivot[region].values
+        total   = raw_pivot[region].values
+        ax.bar(offset, total,    width, color=colors[region], alpha=0.15,
+               edgecolor=colors[region], linewidth=1.2, label=f"{region} (total vocab)")
+        ax.bar(offset, covered,  width, color=colors[region], alpha=0.85,
+               label=f"{region} (BERTopic)")
+
+    ax.set_xticks(x + width * (len(regions) - 1) / 2)
+    ax.set_xticklabels(years, rotation=90)
+    ax.set_yscale("log")
+    yticks = [100, 200, 500, 1000, 2000, 5000, 10000, 20000]
+    ax.set_yticks(yticks)
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{int(v):,}"))
+    ax.set_xlabel("Year")
+    ax.set_ylabel("Unique words (log scale)")
+    ax.set_title("Unique Words by Year and Institution")
+    ax.legend(title="Institution", ncol=2)
+    ax.grid(True, axis="y", which="major", linestyle="--", alpha=0.7)
+    plt.tight_layout()
     save_fig("unique_words")
 
 
@@ -403,7 +430,7 @@ if __name__ == "__main__":
     logger.info(f"Words matched to topics: {emb['word'].nunique()} "
                 f"({emb['short_topic'].nunique()} topics covered)")
 
-    plot_unique_words(emb)
+    plot_unique_words(emb_bertopic=emb)
 
     # --- Centroids ---
     logger.info("Computing weighted centroids...")

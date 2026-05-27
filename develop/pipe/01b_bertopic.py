@@ -11,7 +11,7 @@ from sentence_transformers import SentenceTransformer
 from develop.utils.paths import DATA
 from develop.utils.logger import LoggerManager
 
-log_mgr = LoggerManager(name="bertopic", log_file="01_bertopic.log", clear_log=True)
+log_mgr = LoggerManager(name="bertopic", log_file="01b_bertopic.log", clear_log=True)
 logger  = log_mgr.get_logger()
 
 GRID_DIR          = os.path.join(DATA, "bertopic_grid")

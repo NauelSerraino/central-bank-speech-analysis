@@ -16,7 +16,7 @@ from develop.utils.paths import DATA
 from develop.core.vectors_flags.label_assinger import LabelAssigner
 from develop.utils.logger import LoggerManager
 
-log_mgr = LoggerManager(name="bertopic_grid", log_file="01b_bertopic_grid.log", clear_log=True)
+log_mgr = LoggerManager(name="bertopic_grid", log_file="01_bertopic_grid.log", clear_log=True)
 logger = log_mgr.get_logger()
 
 CORPUS_DIR   = os.path.join(DATA, "00_preprocessed_corpus")
@@ -140,7 +140,7 @@ def run_label_assignment(out_dir):
     labeled_topics = set(df[~df["label"].isna()]["topic"].unique())
     doc_coverage   = df[df["topic"].isin(labeled_topics)]["count"].sum() / total_docs
 
-    return labeled_rate, n_total, n_labeled, n_unlabeled, assigner.threshold, doc_coverage
+    return labeled_rate, n_total, n_labeled, n_unlabeled, assigner.threshold, doc_coverage, assigner.best_db_norm, assigner.best_coverage
 
 
 def load_cached_result(out_dir):
@@ -209,15 +209,18 @@ if __name__ == "__main__":
 
             if n_topics < 10:
                 logger.warning(f"  Skipping label assignment: too few topics ({n_topics})")
-                labeled_rate, n_total, n_labeled, n_unlabeled, tau, doc_coverage = None, n_topics, None, None, None, None
+                labeled_rate, n_total, n_labeled, n_unlabeled, tau, doc_coverage, db_norm, coverage = None, n_topics, None, None, None, None, None, None
             else:
                 try:
-                    labeled_rate, n_total, n_labeled, n_unlabeled, tau, doc_coverage = run_label_assignment(out_dir)
-                    logger.info(f"  Labels: {n_labeled}/{n_total} labeled ({labeled_rate:.1%}), "
-                                f"doc_coverage={doc_coverage:.1%}, τ*={tau:.2f}")
+                    labeled_rate, n_total, n_labeled, n_unlabeled, tau, doc_coverage, db_norm, coverage = run_label_assignment(out_dir)
+                    hmean = 2 * labeled_rate * doc_coverage / (labeled_rate + doc_coverage) if (labeled_rate + doc_coverage) > 0 else 0.0
+                    logger.info(f"  [BERTopic] {n_labeled}/{n_total} topics labeled ({labeled_rate:.1%}), "
+                                f"doc_coverage={doc_coverage:.1%}, hmean={hmean:.3f}")
+                    logger.info(f"  [τ*={tau:.2f}]  db_norm={db_norm:.3f}, "
+                                f"label_coverage={coverage:.3f}, combined={((db_norm + coverage) / 2):.3f}")
                 except Exception as e:
                     logger.warning(f"  Label assignment failed: {e}")
-                    labeled_rate, n_total, n_labeled, n_unlabeled, tau, doc_coverage = None, n_topics, None, None, None, None
+                    labeled_rate, n_total, n_labeled, n_unlabeled, tau, doc_coverage, db_norm, coverage = None, n_topics, None, None, None, None, None, None
 
             result = {
                 "config":             cid,
@@ -231,6 +234,9 @@ if __name__ == "__main__":
                 "labeled_rate":       round(labeled_rate, 4) if labeled_rate is not None else None,
                 "doc_coverage":       round(doc_coverage, 4) if doc_coverage is not None else None,
                 "tau_star":           round(tau, 2) if tau is not None else None,
+                "db_norm":            round(db_norm, 4) if db_norm is not None else None,
+                "label_coverage":     round(coverage, 4) if coverage is not None else None,
+                "combined_score":     round((db_norm + coverage) / 2, 4) if db_norm is not None else None,
             }
             save_result(out_dir, result)
             results.append(result)
