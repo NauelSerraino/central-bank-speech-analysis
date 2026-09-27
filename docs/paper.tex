@@ -89,6 +89,7 @@ grestore
 \newcommand{\paola}[1]{{\color{teal}{#1}}}
 \newcommand{\nauel}[1]{{\color{red}{#1}}}
 \newcommand{\review}[1]{{\color{orange}{#1}}}
+\newcommand{\reviewtwo}[1]{{\color{teal}{#1}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Insert the name of "your journal" with
@@ -720,27 +721,37 @@ As final remarks, the main limitation of the study include the reliance solely o
 %% LABELS
 \begin{table}[h!]
     \centering
-    \caption{Label assignment configuration and topics.}
+    \caption{Label assignment configuration and topics.\review{ For each category, the number of BERTopic topics assigned to it and the number of documents they contain (share of clustered documents).}}
     \label{tab:label_assigner}
-    \begin{tabular}{l l}
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \begin{tabular}{l r r r}
         \hline
-        \textbf{Parameter} & \textbf{Value / Description} \\
+        \textbf{Parameter} & \multicolumn{3}{l}{\textbf{Value}} \\
         \hline
-        Embedding Model & all-MiniLM-L6-v2 (SentenceTransformers) \\
-        Similarity Metric & Cosine similarity \\
-        Assignment Threshold ($\tau^*$) & 0.30 \\
-        Topics & \\
-        \quad 1 & Monetary policy and interest rates \\
-        \quad 2 & Inflation and consumer prices \\
-        \quad 3 & Labor market and employment \\
-        \quad 4 & Financial markets and banking \\
-        \quad 5 & Fiscal policy and government spending \\
-        \quad 6 & International trade and global economy \\
-        \quad 7 & Economic development and inequality \\
-        \quad 8 & Climate change and sustainable finance \\
-        \quad 9 & Industrial and sectoral economics \\
-        \quad 10 & Behavioral economics and expectations \\
-        \quad 11 & Policy communication and forward guidance \\
+        Embedding Model & \multicolumn{3}{l}{all-MiniLM-L6-v2} \\
+        Similarity Metric & \multicolumn{3}{l}{Cosine similarity} \\
+        Assignment Threshold ($\tau^*$) & \multicolumn{3}{l}{0.30} \\
+        \reviewtwo{Total docs} & \multicolumn{3}{l}{\reviewtwo{35,392}} \\
+        \reviewtwo{Noise docs (HDBSCAN, $-1$)} & \multicolumn{3}{l}{\reviewtwo{17,693 (49.99\%)}} \\
+        \reviewtwo{Labeled docs} & \multicolumn{3}{l}{\reviewtwo{15,407 (43.53\%)}} \\
+        \hline
+        \reviewtwo{\textbf{Topics}} & \reviewtwo{\textbf{\# BERTopics}} & \reviewtwo{\textbf{Docs}} & \reviewtwo{\textbf{\%}} \\
+        \hline
+        1 - Monetary policy and interest rates & \reviewtwo{53} & \reviewtwo{5,422} & \reviewtwo{30.6} \\
+        2 - Inflation and consumer prices & \reviewtwo{9} & \reviewtwo{939} & \reviewtwo{5.3} \\
+        3 - Labor market and employment & \reviewtwo{20} & \reviewtwo{1,164} & \reviewtwo{6.6} \\
+        4 - Financial markets and banking & \reviewtwo{64} & \reviewtwo{6,296} & \reviewtwo{35.6} \\
+        5 - Fiscal policy and government spending & \reviewtwo{4} & \reviewtwo{302} & \reviewtwo{1.7} \\
+        6 - International trade and global economy & \reviewtwo{7} & \reviewtwo{242} & \reviewtwo{1.4} \\
+        7 - Economic development and inequality & \reviewtwo{1} & \reviewtwo{16} & \reviewtwo{0.1} \\
+        8 - Climate change and sustainable finance & \reviewtwo{1} & \reviewtwo{536} & \reviewtwo{3.0} \\
+        9 - Industrial and sectoral economics & \reviewtwo{4} & \reviewtwo{211} & \reviewtwo{1.2} \\
+        10 - Behavioral economics and expectations & \reviewtwo{2} & \reviewtwo{47} & \reviewtwo{0.3} \\
+        11 - Policy communication and forward guidance & \reviewtwo{2} & \reviewtwo{232} & \reviewtwo{1.3} \\
+        \reviewtwo{Unlabeled} & \reviewtwo{34} & \reviewtwo{2,292} & \reviewtwo{12.9} \\
+        \hline
+        \reviewtwo{Total clustered} & \reviewtwo{201} & \reviewtwo{17,699} & \reviewtwo{100} \\
         \hline
     \end{tabular}
 \end{table}

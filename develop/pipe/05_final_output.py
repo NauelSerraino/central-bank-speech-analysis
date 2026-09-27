@@ -87,6 +87,42 @@ def assign_labels(df):
     return df
 
 
+def save_label_coverage(df):
+    df = df.query("2000 <= year <= 2025").copy()
+    words = pd.read_parquet(os.path.join(BERTOPIC, "bertopic_topic_words.parquet"))
+    topic_to_words = words.groupby("topic")["word"].apply(lambda s: ", ".join(s)).to_dict()
+
+    # noise = HDBSCAN outliers (topic -1); unlabeled = clustered but below τ*
+    df["status"] = np.select(
+        [df["topic"] == -1, df["label"].isna()],
+        ["noise", "unlabeled"],
+        default="labeled",
+    )
+    status = df.pivot_table(index="region", columns="status", values="count",
+                            aggfunc="sum", margins=True, margins_name="All")
+    shares = status[["noise", "unlabeled", "labeled"]].div(status["All"], axis=0)
+    shares["unlabeled_of_clustered"] = status["unlabeled"] / (status["unlabeled"] + status["labeled"])
+    shares.round(4).to_csv(os.path.join(FIG_DIR, "label_coverage_shares.csv"))
+
+    topic_label = (df[df["topic"] != -1]
+                   .groupby("topic")
+                   .agg(label=("label", "first"), n_docs=("count", "sum"))
+                   .reset_index())
+    topic_label["top_words"] = topic_label["topic"].map(topic_to_words)
+    topic_label.to_csv(os.path.join(FIG_DIR, "topic_label_mapping.csv"), index=False)
+
+    summary = (topic_label.fillna({"label": "UNLABELED"})
+                          .groupby("label")
+                          .agg(n_topics=("topic", "size"), n_docs=("n_docs", "sum"))
+                          .sort_values("n_docs", ascending=False))
+    summary["share_of_clustered"] = (summary["n_docs"] / summary["n_docs"].sum()).round(4)
+    summary.to_csv(os.path.join(FIG_DIR, "label_summary.csv"))
+
+    logger.info(f"Noise share: {shares.loc['All', 'noise']:.1%} | "
+                f"unlabeled (of clustered): {shares.loc['All', 'unlabeled_of_clustered']:.1%} | "
+                f"unlabeled topics: {topic_label['label'].isna().sum()}/{len(topic_label)}")
+
+
 def prepare_topics_df(df):
     return (
         df.groupby(["year", "region", "short_topic"])["count"]
@@ -405,6 +441,7 @@ if __name__ == "__main__":
 
     logger.info("Running label assignment...")
     df = assign_labels(df)
+    save_label_coverage(df)
 
     topics_df     = prepare_topics_df(df)
     topic_counter = aggregate_word_counts(df)
