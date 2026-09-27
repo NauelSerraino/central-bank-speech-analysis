@@ -125,7 +125,7 @@ Department of Economics and Management, University of Brescia, Brescia, Italy \\
 \maketitle
 
 \begin{abstract}
-This study investigates the thematic content and semantic evolution of central bank communications from 2000 to 2024, focusing on the European Central Bank and the Federal Reserve, using a combination of BERTopic for topic modeling and Temporal Word Embeddings with a Compass for semantic analysis. This framework enables us to quantify both the alignment of purpose of the two institutions and the temporal semantic shifts within their own speeches. Our results indicate convergence in predominant topics such as interest rates and financial markets, while divergences appear in secondary topics like inequality, fiscal policy, industries, and climate-related issues. Intra-institutional analysis reveals that the ECB experienced substantial semantic shifts during the early 2000s, likely reflecting the introduction of the euro, whereas the Fed exhibits more gradual and heterogeneous changes over time. 
+This study investigates the thematic content and semantic evolution of central bank communications from 2000 to 2025, focusing on the European Central Bank and the Federal Reserve, using a combination of BERTopic for topic modeling and Temporal Word Embeddings with a Compass for semantic analysis. This framework enables us to quantify both the semantic convergence of the two institutions and the temporal semantic shifts within their own speeches. Our results indicate convergence in predominant topics such as interest rates and financial markets, while divergences appear in secondary topics like inequality, fiscal policy, industries, and climate-related issues. Intra-institutional analysis reveals that the ECB experienced substantial semantic shifts during the early 2000s, likely reflecting the introduction of the euro, whereas the Fed exhibits more gradual and heterogeneous changes over time. 
 
 \keywords{Central Bank Communication \and ECB \and Federal Reserve \and Natural Language Processing \and Temporal Word Embeddings \and TWEC}
 % \PACS{PACS code1 \and PACS code2 \and more}
@@ -142,18 +142,20 @@ The methodological part of this study was carried out within the MICS (Made in I
 
 Part of the duties of central banks is to shape the economic expectations of investors, consumers and ultimately the markets. Both the European Central Bank (ECB) and the Federal Reserve (Fed) issue regular statements that aim to increase the transparency of monetary policy and ultimately guide public expectations. While prior research has examined the impact of tone, sentiment, and readability of such communications, little attention has been paid to the degree of alignment between the two institutions or to the evolution of semantic meaning over time.
 
-In fact, to the best of our knowledge, no prior work has attempted to quantify the alignment of purpose between the ECB and the Fed, nor to systematically measure the temporal shifts in the semantic meaning of specific topics. Such an approach could provide useful measures to evaluate potential synergies that originate from high alignment in communication styles, as well as the risk of friction due to lack of it. 
+In fact, to the best of our knowledge, no prior work has attempted to quantify the semantic convergence between the ECB and the Fed, nor to systematically measure the temporal shifts in the semantic meaning of specific topics. Such an approach could provide useful measures to evaluate potential synergies that originate from high alignment in communication styles, as well as the risk of friction due to lack of it. 
 
 From a methodological point of view, the novel contribution of this work is the introduction of an innovative Natural Langauge Processing framework to address the problem of comparatively analyzing the contents and semantics of two different corpora, while simultaneously accounting for their temporal evolution. The proposed procedure jointly exploits two well-established algorithms, BERTopic for topic modeling and Temporal Word Embeddings with a Compass for semantic analysis. While both methods have been independently applied in previous research, this study proposes a novel integration strategy that combines their outputs to produce a cross-referenced representation of topics and semantics. This integrated structure not only captures the underlying thematic organization of the data but also traces how the semantic meaning of topics evolves over time, thereby providing a richer and temporally informed understanding of the phenomena under study.
 
 This paper is structured as follows. Section~\ref{sec2} reviews the relevant literature on central bank communications, focusing on both signal extraction for macroeconomic predictions and topic modeling approaches. Section~\ref{sec3} describes the dataset and the pipeline developed to combine BERTopic with Temporal Word Embeddings using a Compass. Together with theoretical background on word and temporal embeddings, as well as distance metrics. Section~\ref{sec4} presents the obtained results, covering intra-institution topic distributions, cross-institution semantic alignment, and intra-institution semantic evolution of central banks' communications. %\paola{controlla se è coerente con nuovi titoli delle sottosezioni}
 
 \section{Related works on central bank communications analysis}\label{sec2}
+\review{Research on central bank communications has expanded significantly over the past two decades, building on a set of foundational contributions that established the informational content of central bank language as a legitimate object of empirical study. \review{\cite{gurkaynak_actions_2004} provide early evidence that Fed statements move asset prices independently of the policy rate decision itself, showing that the words chosen by central bankers carry economically significant information. \cite{blinder_central_2008} offer a comprehensive survey of the theory and evidence on how central banks communicate monetary policy, documenting the broader shift toward greater institutional transparency and reviewing the mechanisms through which forward-looking communication shapes private sector expectations. \cite{lucca_measuring_2009} take a further step by introducing an automated text-based approach to systematically quantify the content of Federal Open Market Committee (FOMC) statements, demonstrating that machine-readable signals extracted from central bank language are informative about future monetary policy decisions and market reactions.} Subsequent work, largely driven by advances in Natural Language Processing (NLP) and machine learning, has extended this tradition along two main directions: signal extraction with variable prediction and topic modeling.
 
-Research on central bank communications has expanded significantly over the past two decades, largely driven by advances in Natural Language Processing (NLP) and machine learning methods. The main existing literature on the topic can be split into two main macro areas, namely signal extraction with variable prediction and topic modeling.
+}
+
 \subsection{Signal extraction and variable prediction}
 
-Several studies focus on understanding how central banks' statements influence monetary policy expectations and macroeconomic outcomes. For example, \cite{hansen_shocking_2016} examine Federal Open Market Committee (FOMC) communications, quantifying how forward guidance on interest rates has more relevance than statements about the current economic conditions. Similarly,  \cite{aruoba_identifying_2024} propose a method to identify monetary policy shocks by analyzing Federal Reserve staff documents with NLP, finding that textual information contains further information not captured by numerical forecasts provided by the institutions themselves. \cite{hilscher_information_2024} extend this by constructing sentiment scores for both the Fed and ECB communication statements, demonstrating that sentiment predicts future policy rates and influences market indicators such as stock returns. \cite{ecb_word2prices_2025} use Word2Vec embeddings built on ECB press conferences to improve inflation forecasts, showing that word embeddings capture semantic information beyond traditional dictionary-based metrics. \cite{ahrens_extracting_2021} introduce a dispersion index capturing the heterogeneity of monetary policy signals in speeches, suggesting that more dispersed messaging may produce stronger market reactions. \cite{hansen_transparency_2018} study the communication style of FOMC deliberation, finding evidence in favor of positive effects induced by central banks' transparency in communications. 
+Several studies focus on understanding how central banks' statements influence monetary policy expectations and macroeconomic outcomes. For example, \cite{hansen_shocking_2016} examine FOMC communications, quantifying how forward guidance on interest rates has more relevance than statements about the current economic conditions. Similarly,  \cite{aruoba_identifying_2024} propose a method to identify monetary policy shocks by analyzing Federal Reserve staff documents with NLP, finding that textual information contains further information not captured by numerical forecasts provided by the institutions themselves. \cite{hilscher_information_2024} extend this by constructing sentiment scores for both the Fed and ECB communication statements, demonstrating that sentiment predicts future policy rates and influences market indicators such as stock returns. \cite{ecb_word2prices_2025} use Word2Vec embeddings built on ECB press conferences to improve inflation forecasts, showing that word embeddings capture semantic information beyond traditional dictionary-based metrics. \cite{ahrens_extracting_2021} introduce a dispersion index capturing the heterogeneity of monetary policy signals in speeches, suggesting that more dispersed messaging may produce stronger market reactions. \cite{hansen_transparency_2018} study the communication style of FOMC deliberation, finding evidence in favor of positive effects induced by central banks' transparency in communications. 
 
 \subsection{Topic modeling}
 
@@ -163,7 +165,9 @@ Focusing on the latter, our research aims primarily at the analysis of the align
 
 \section{Methods and data}\label{sec3}
 \subsection{Corpora}\label{subsec31}
-The dataset used in this study was retrieved from Hugging Face\footnote{\url{https://huggingface.co/datasets/istat-ai/ECB-FED-speeches/viewer/default/train?row=0}}, and originates from the Bank for International Settlements (BIS\footnote{\url{https://www.bis.org/}}), which collects ECB and Fed communications. It covers the period from 2000 to 2024 and consists of speeches, introductory statements, and keynote addresses. The corpus underwent a standard text-preprocessing procedure aimed at removing stopwords, punctuation, and non-standard characters. Each corpus was divided into yearly sub-corpora to enable temporal embedding training. In total, the dataset consists of approximately $\sim$18,000 unique words. The number of unique words per year and institution is described in Figure \ref{fig:num_of_words_by_region}.
+% The dataset used in this study was retrieved from Hugging Face\footnote{\url{https://huggingface.co/datasets/istat-ai/ECB-FED-speeches/viewer/default/train?row=0}}, and originates from the Bank for International Settlements (BIS\footnote{\url{https://www.bis.org/}}), which collects ECB and Fed communications. It covers the period from 2000 to 2024 and consists of speeches, introductory statements, and keynote addresses. The corpus underwent a standard text-preprocessing procedure aimed at removing stopwords, punctuation, and non-standard characters. Each corpus was divided into yearly sub-corpora to enable temporal embedding training. In total, the dataset consists of approximately $\sim$18,000 unique words. The number of unique words per year and institution is described in Figure \ref{fig:num_of_words_by_region}.
+
+\review{The dataset used in this study was retrieved from Hugging Face\footnote{\url{https://huggingface.co/datasets/istat-ai/ECB-FED-speeches/viewer/default/train?row=0}}, and originates from the Bank for International Settlements (BIS\footnote{\url{https://www.bis.org/cbspeeches}}), which collects ECB and Fed communications. We selected the period from 2000 to 2025 and consists of speeches, introductory statements, and keynote addresses. The lower bound of 2000 was chosen for homogeneity reasons: the ECB was established in June 1998 and began publishing speeches systematically only from 1999 onward, making earlier sub-corpora substantially smaller and unevenly distributed across years. Alternative sources for central bank communications include the official speech archives maintained directly by the ECB\footnote{\url{https://www.ecb.europa.eu/press/key/html/downloads.en.html}} and the Federal Reserve\footnote{\url{https://www.federalreserve.gov/newsevents/speeches.htm}}, as well as the BIS Central Bank Speeches\footnote{\url{databasehttps://www.bis.org/cbspeeches/download.htm}}, which covers over 60 central banks worldwide and would represent the natural starting point for extending the analysis to additional institutions. The corpus underwent a standard text-preprocessing procedure aimed at removing stopwords, punctuation, and non-standard characters. Each corpus was divided into yearly sub-corpora to enable temporal embedding training. Despite this cleaning step, the resulting vocabulary remains large and noisy: rare words, proper nouns, and domain-specific abbreviations that appear only sporadically inflate the total word count without carrying stable semantic signal. The pipeline described in Section \ref{subsec34} further reduces this vocabulary to a compact set of representative words per topic, identified by the BERTopic model. Figure \ref{fig:num_of_words_by_region} illustrates this distinction: the faint outlined bars represent the full post-preprocessing vocabulary, while the solid bars indicate the subset of words that are actually retained and used in the analysis.}
 % \begin{figure}[!h]
 %     \centering
 %     \includegraphics[width=0.7\linewidth]{words-distribution.png}
@@ -173,15 +177,15 @@ The dataset used in this study was retrieved from Hugging Face\footnote{\url{htt
 \begin{figure}[h!]
     \centering
     \includegraphics[width=\textwidth]{review/figs/unique_words.png}
-    \caption{Unique words distribution by: Year, Institution}
+    \caption{Unique words by year and institution. Faint outlined bars show the full post-preprocessing vocabulary; solid bars show the subset of words retained by the BERTopic pipeline.}
     \label{fig:num_of_words_by_region}
 \end{figure}
 
-The corpus consists of 2,189 texts from the Fed and 2,487 texts from the ECB. A total of 116 unique authors contributed, predominantly central bank presidents, executive board members, and senior economists, reflecting a combination of policymakers and senior technical experts.
+The corpus consists of 2,189 texts from the Fed and 2,487 texts from the ECB. A total of 110 unique authors contributed, predominantly central bank presidents, executive board members, and senior economists, reflecting a combination of policymakers and senior technical experts.
 
 \subsection{Word embeddings and contextualized representations}\label{subsec35}
 
-Word embeddings are numerical vector representations of words that encode semantic relationships in a high-dimensional latent space. Their first adoption originates from Word2Vec model by \cite{Mikolov2013} which trains a neural network on word co-occurrences to produce \emph{static} embeddings per each word in the training corpus. While effective at capturing general semantic similarity, static embeddings cannot distinguish different meanings of a word in different contexts (e.g., ``mouse'' as a computer's device vs. animal). To address this limitation, \cite{vaswani2017attention} introduced the \emph{Transformer} architecture. Originally designed for automated translation, it became the foundation for models such as BERT introduced by \cite{devlin-etal-2019-bert}. BERT produces \emph{contextualized} embeddings thanks to its ability to
+Word embeddings are numerical vector representations of words that encode semantic relationships in a high-dimensional latent space. Their first adoption originates from Word2Vec model by \cite{Mikolov2013} which trains a neural network on word co-occurrences to produce static embeddings per each word in the training corpus. While effective at capturing general semantic similarity, static embeddings cannot distinguish different meanings of a word in different contexts (e.g., ``mouse'' as a computer's device vs. animal). To address this limitation, \cite{vaswani2017attention} introduced the Transformer architecture. Originally designed for automated translation, it became the foundation for models such as BERT introduced by \cite{devlin-etal-2019-bert}. BERT produces contextualized embeddings thanks to its ability to
 capture long-range dependencies.
 
 In this paper, we exploit both principles: we use Temporal Word Embeddings with a Compass, an extension of Word2Vec to capture temporal semantic shifts, while adopting BERT-like models to detect nuanced topics in central bank communications. In section \ref{subsec32} we will briefly recall the first technique, while section \ref{subsec34} explains the method we propose to integrate it with BERTopic, with the aim of performing joint topic and temporal semantic analysis.
@@ -208,7 +212,7 @@ For our purpose, suppose that the corpus $\mathcal{D}$ is divided into $T$ sub-c
 \end{equation}
 The temporal embedding function ensures that words occurring in similar contexts within a given period are mapped to nearby vectors. Across two different time steps, it assigns similar representations to the same word if its contextual usage remains consistent. As a result, similarity patterns among word vectors both across and within periods can be used to analyze semantic change and the evolution of word relationships over time.
 
-\review{To prove the stability of TWEC embeddings in our particular setting we assessed it along two dimensions: seed initialization and hyperparameter tuning. First, we re-trained the model under five different random seeds and measured the Spearman rank correlation ($\rho$) of the resulting topic divergence rankings; all pairwise correlations were perfect ($\rho = 1.000$). Second, we varied the embedding size and the context window independently; rankings were near-perfectly stable across embedding sizes (minimum $\rho = 0.950$) and context windows (minimum $\rho = 0.967$). These results confirm that the topic divergence conclusions are not sensitive to the specific TWEC parameterisation or random initialisation. Full Spearman matrices are reported in Appendix~A, Table~\ref{tab:twec_stability}.
+\review{To prove the stability of TWEC embeddings in our particular setting we assessed it along two dimensions: seed initialization and hyperparameter tuning. First, we re-trained the model under five different random seeds and measured the Spearman rank correlation ($\rho$) of the resulting topic divergence rankings; pairwise correlations were near-perfect (minimum $\rho = 0.991$). Second, we varied the embedding size and the context window independently; rankings remained highly stable across embedding sizes (minimum $\rho = 0.927$) and context windows (minimum $\rho = 0.964$). These results confirm that the topic divergence conclusions are not sensitive to the specific TWEC parameterisation or random initialisation. Full Spearman matrices are reported in Appendix~A, Table~\ref{tab:twec_stability}.
 }
 
 Before describing in detail the main proposal of this paper, we make a brief digression to discuss the method used to compute distances between word embeddings, with a focus on time shifts, which will be adopted throughout the analysis.
@@ -284,7 +288,7 @@ The starting point of the pipeline is the implementation of BERTopic from \cite{
 
 \review{
 UMAP and HDBSCAN hyperparameters were selected through a systematic gridsearch over \texttt{n\_neighbors}, \texttt{min\_cluster\_size}, and
-\texttt{paragraphs\_per\_doc}, yielding 60 candidate configurations
+\texttt{paragraphs\_per\_doc}, yielding 45 candidate configurations
 (see Appendix~A, Table~\ref{tab:grid_params}). All remaining parameters
 were fixed at BERTopic defaults.
 The parameter \texttt{n\_neighbors} controls the balance between local and
@@ -322,18 +326,19 @@ L_{h,\text{assigned}} =
 \end{equation}
 
 \review{
-The threshold $\tau^*$ is not fixed a priori but selected automatically 
-through a data-driven procedure. For each candidate value 
+The threshold $\tau^*$ is not fixed a priori but selected automatically
+through a data-driven procedure. For each candidate value
 $\tau \in \{0.20, 0.25, \dots, 0.55\}$, we compute a combined score
 \begin{equation}\label{eq:tau_opt}
-    \text{score}(\tau) = \alpha \cdot \text{sil}(\tau) + 
-    (1 - \alpha) \cdot \text{cov}(\tau),
+    \text{score}(\tau) = \frac{1}{2}\Bigl(\text{DB}_{\text{norm}}(\tau) + \text{cov}(\tau)\Bigr),
 \end{equation}
-where $\text{sil}(\tau)$ is the silhouette score \citep{rousseeuw_silhouettes_1987} 
-of the label assignments and $\text{cov}(\tau)$ is the fraction of predefined 
-labels that receive at least one topic assignment. With $\alpha = 0.40$ in order to slighlty prioritize coverage over cluster compactness, and $\tau^*$ is chosen as the value maximizing $\text{score}(\tau)$.
+where $\text{DB}_{\text{norm}}(\tau) = 1/(1 + \text{DB}(\tau))$ is a normalised
+Davies-Bouldin index \citep{davies1979cluster} computed with cosine distance on the
+label-assigned topic embeddings, so that lower cluster scatter maps to a higher score,
+and $\text{cov}(\tau)$ is the fraction of predefined labels that receive at least one
+topic assignment. In such a way, $\tau^*$ is chosen as the value maximising $\text{score}(\tau)$.
 }
-The label assignment rules and the topics are displayed in Table \ref{tab:label_assigner}. In this way, the initial $M=219$ topics extracted by BERTopic, are assigned to $N=11$ higher-level categories based on predefined labels (Table \ref{tab:unique_words}). Of these 11 categories, only 9 received assignments, while Fiscal Policy and Inequality remained empty.
+The label assignment rules and the topics are displayed in Table \ref{tab:label_assigner}. In this way, the initial $M=201$ topics extracted by BERTopic, are assigned to $N=11$ higher-level categories based on predefined labels (Table \ref{tab:unique_words}).
 
 \begin{table}[h!]
     \centering
@@ -343,21 +348,22 @@ The label assignment rules and the topics are displayed in Table \ref{tab:label_
         \hline
         \textbf{Topic} & \textbf{Unique Words} \\
         \hline
-        Monetary Policy And Interest Rates & 433 \\
-        Financial Markets And Banking & 358 \\
-        Labor Market And Employment & 195 \\
-        Inflation And Consumer Prices & 112 \\
-        Industrial And Sectoral Economics & 51 \\
-        International Trade And Global Economy & 47 \\
-        Behavioral Economics And Expectations & 10 \\
+        Financial Markets And Banking & 407 \\
+        Monetary Policy And Interest Rates & 293 \\
+        Labor Market And Employment & 144 \\
+        Inflation And Consumer Prices & 66 \\
+        International Trade And Global Economy & 57 \\
+        Industrial And Sectoral Economics & 37 \\
+        Fiscal Policy And Government Spending & 36 \\
+        Behavioral Economics And Expectations & 20 \\
+        Policy Communication And Forward Guidance & 20 \\
         Climate Change And Sustainable Finance & 10 \\
-        Policy Communication And Forward Guidance & 10 \\
+        Economic Development And Inequality & 10 \\
         \hline
     \end{tabular}
 \end{table}
 
-
-Next, having a list of words for each labelled topic, we computed a single vectorial representation, or \emph{centroid} based on the weighted mean of the word embeddings obtained from the TWEC model per each topic and year. Such procedure reflects a simple yet powerful technique used to represents documents or phrases, as pointed out in \cite{zhang2024word}. Specifically, let $\mathbf{e_t}(w_i)$ denote the embedding of word $w_i$ at time $t$, and let $\alpha_{it}$ be the product of the word's frequency and the norm of its embedding vector at time 
+Next, having a list of words for each labelled topic, we computed a single vectorial representation, or centroid based on the weighted mean of the word embeddings obtained from the TWEC model per each topic and year. Such procedure reflects a simple yet powerful technique used to represents documents or phrases, as pointed out in \cite{zhang2024word}. Specifically, let $\mathbf{e_t}(w_i)$ denote the embedding of word $w_i$ at time $t$, and let $\alpha_{it}$ be the product of the word's frequency and the norm of its embedding vector at time 
 $t$. The use of both frequency and norm is inspired by \cite{oyama2023norm} which argues that the embedding norm encodes word importance, motivating its inclusion in our weighting procedure. The resulting centroid vector $\mathbf{c}_t^n$ for topic $n$ at time $t$ ($n=1,2,\dots,N$) is computed as:
 
 % \begin{equation}
@@ -372,7 +378,7 @@ where $\mathcal{W}_n$ is the set of words assigned to  topic $n$.
 
 \review{
 To empirically validate the usage of norm as a weighting measure we compare three schemes: freq$\times$norm, frequency-only ($\alpha_{it} = \text{freq}_{it}$), and uniform ($\alpha_{it} = 1$) using the Davies-Bouldin index \citep{davies1979cluster} with cosine distance, which measures the ratio of within-cluster scatter to between-centroid separation; lower values indicate tighter, better-separated topic representations. For each institution and year, we compute the index by measuring cosine distances between each word's embedding and its topic centroid, and between pairs of topic centroids, then average the resulting scores across all institution-year slices.
-The freq$\times$norm scheme achieves the lowest Davies-Bouldin index (2.65), outperforming frequency-only (3.16) and uniform weighting (9.90), confirming that the norm component moves each centroid toward a position more representative of its topic's semantic core.
+The freq$\times$norm scheme achieves the lowest Davies-Bouldin index (2.89), outperforming frequency-only (3.27) and uniform weighting (7.23), confirming that the norm component moves each centroid toward a position more representative of its topic's semantic core.
 }
 
 
@@ -408,6 +414,34 @@ For clarity and ease of reference, we also provide a pseudo-algorithm summarizin
 \end{algorithmic}
 \end{algorithm}
 
+
+\subsection{Comparison with alternative architectures models}\label{subsec:alternatives}
+
+\review{The most natural static alternative to BERTopic for identifying topics in central bank communications is Latent Dirichlet Allocation (LDA), a generative probabilistic model that represents each topic as a distribution over vocabulary items and each document as a mixture of topics \citep{blei_lda_2003}. While this approach is well-established and widely used in the computational social science literature, it has a structural limitation that makes it unsuitable as the topic identification component of the present framework. Because LDA represents topics as probability distributions over discrete vocabulary items, it produces no geometric word vectors and therefore provides no natural basis for computing cosine similarities between topic representations across institutions or across time periods. The semantic content of a topic is encoded as a ranked list of high-probability words rather than as a point in a continuous vector space, which means that the cross-institution alignment and temporal centroid analysis that are central to this study cannot be carried out directly on LDA topic representations without an additional embedding step that LDA itself does not provide.
+
+Comparing unsupervised topic models is inherently difficult because there is no ground-truth labelling against which model outputs can be evaluated, and no single metric captures all dimensions of topic quality simultaneously. Nonetheless, the literature has converged on a set of complementary measures that together provide a multi-faceted assessment of how well a topic model organises a corpus, and we report seven of them in Table~\ref{tab:coherence_comparison}, computed on the same preprocessed corpus with both methods trained on the same number of topics ($K = 11$). $C_v$ coherence and Normalized Pointwise Mutual Information (NPMI), both formalised by \citet{roder_exploring_2015} in a systematic evaluation of topic coherence measures, quantify the extent to which the top words of a topic co-occur in similar contexts within the corpus, with higher values indicating that a topic's words tend to appear together and thereby reflect greater lexical coherence. Topic diversity, proposed by \citet{dieng_topic_2020} as part of the Embedded Topic Model evaluation framework, is the fraction of unique words across all topic word lists and measures the degree to which topics are lexically non-overlapping at the vocabulary level. Topic uniqueness, employed by \citet{bianchi_pretraining_2021} to evaluate contextualized topic models, is the mean fraction of each topic's top words that appear in no other topic and provides a more granular measure of within-topic exclusivity. Mean pairwise topic overlap, computed as the average Jaccard similarity between all topic pairs, captures inter-topic redundancy at the set level, where lower values indicate more clearly separated topics. Embedding coherence is a task-specific measure we defined as the mean pairwise cosine similarity between the word vectors of each topic in the TWEC compass space used throughout this study, capturing the degree to which a topic's representative words cluster together in the same continuous semantic space in which the temporal analysis is conducted. Davies-Bouldin \citep{davies1979cluster} is the same index used in the $\tau^*$ selection, computed with cosine distance in the TWEC compass space, lower values identify better-separated topics.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{lcccccccc}
+\toprule
+Method & $K$ & $C_v$ & NPMI & Emb.\ coh. & Diversity & Uniqueness & Overlap & DB \\
+\midrule
+BERTopic & 11 & 0.6061 & 0.0529 & \textbf{0.2520} & \textbf{0.9273} & \textbf{0.8545} & \textbf{0.0077} & 1.8823 \\
+LDA & 11 & \textbf{0.6766} & \textbf{0.0715} & 0.2148 & 0.8091 & 0.6727 & 0.0279 & \textbf{1.8293} \\
+\bottomrule
+\end{tabular}
+\caption{Topic quality comparison between BERTopic and LDA ($K=11$, same corpus). $C_v$ and NPMI measure token co-occurrence coherence and inherently favour bag-of-words models such as LDA. Embedding coherence is the mean pairwise cosine similarity of topic word vectors in the TWEC compass space, the same embedding space used in the paper, and is therefore a more appropriate metric for evaluating BERTopic's semantic quality. Diversity is the fraction of unique words across all topic word lists. Uniqueness is the mean fraction of each topic's words that appear in no other topic. Overlap is the mean Jaccard similarity between topic pairs (lower = more distinct). DB is the Davies-Bouldin index \citep{davies1979cluster} computed with cosine distance in the TWEC compass space (lower = better-separated topics). Higher values are better for all metrics except Overlap and DB.}
+\label{tab:coherence_comparison}
+\end{table}
+
+Taken together, the evidence in Table~\ref{tab:coherence_comparison} shows that BERTopic produces topic representations that are more semantically coherent in the embedding space used for the temporal analysis. In fact, most of the metrics are in favor of it, and we therefore adopt BERTopic as the topic identification component of the proposed framework.
+
+A further alternative would be to train a static Word2Vec model on the full corpus, assign each document a centroid vector by averaging the embeddings of its constituent words, and track how topic centroids move over time. The fundamental limitation of this approach is that a static model collapses the entire corpus into a single shared embedding space in which each word receives one fixed vector regardless of the year in which it appears. The model therefore cannot distinguish the semantic context of a given word in one period from its context in another, and year-to-year semantic drift is invisible by construction. By combining BERTopic with TWEC, the proposed framework addresses both of these limitations simultaneously. BERTopic identifies stable and interpretable topic clusters using a pre-trained sentence transformer, directly answering the question of what central banks communicate about. TWEC then provides temporally-resolved word vectors anchored to a shared compass embedding, answering the question of how the meaning of those topics shifts over time in a space where cross-period and cross-institution comparisons are geometrically valid.}
+
+
+
 \section{Results}\label{sec4}
 \subsection{Intra-institution topic distribution}
 Figure~\ref{fig:topics} displays the resulting topic distributions using the developed pipeline for the Fed and the ECB corpora, highlighting differences in themes across institutions.
@@ -433,7 +467,9 @@ Topic frequencies $f_{t,n}$ were normalized by the total number of topic assignm
 
 %\noindent\textbf{Findings 1} \textit{Topic distributions per institute}\paola{forse a questo punto toglierei \textbf{Findings 1} \textit{Topic distributions per institute}: siamo già nella sezione che discute i risultati da questo punto di vista}: The analysis of topic distributions in Figure~\ref{fig:topics} reveals several patterns. Across both central banks, the dominant topic is \textit{Financial Markets}, reflecting a shared focus on core financial issues. Consistent differences across all years occur for \textit{International Trade}, \textit{Interest Rates}, and \textit{Inflation}, which are more discussed by the ECB than by the Fed. Notable period-specific differences also emerge. For the Fed, there is greater attention to \textit{Inequality}\paola{?} \nauel{sì hai ragione questo è il contrario (ECB > FED), dovrei probabilmente indicare un generico "differenza nella frequenza dei topic" senza indicare il rapporto relativo -- lo cambio} \paola{io riscriverei i commenti alla luce del grafico con gli 11 pannelli}, \textit{Fiscal Policy}, and \textit{Employment} in the periods 2000--2006, 2003--2012, and 2021--2024 \paola{attenzione ai periodi, si sovrappongono}, respectively. While for the ECB, there is greater attention to \textit{Climate Change} in the period 2020--2024. \paola{io continuo a ritrovarmi un po' disorientata con questi commenti, a volte mi trovo d'accordo altre no. Se tagliassimo la testa al toro e facessimo un pannello di grafici, uno per topic, con l'andamento percentuale per Fed e ECB a confronto? L'articolo non è lunghissimo, possiamo perdere una mezza pagina con un grafico in più (a meno che non ci siano limitazioni sul numero di pagine date dalla rivista.} \nauel{volendo si può fare anche perchè una descrizione a parole probabilmente non è ottimale per questo tipo di grafici; che sia una cosa da mettere magari in appendice? il totale dei topic è 11} \paola{credo che gli 11 pannelli possano essere piccoli: non interessa vedere i valori, ma solo l'andamento nel tempo. Se viene troppo grande lo spostiamo in Appendice, oppure aspettiamo che ce lo chieda il revisore} 
 
-The pairwise representation of topics per institution in Figure~\ref{fig:pairwise} shows that \textit{Employment}, \textit{Financial Markets}, and \textit{Fiscal Policy} are predominant topics for the Fed relative to the ECB, whereas the ECB focuses more on \textit{Climate Change}, \textit{Forward Guidance}, \textit{Industries}, \textit{Inequality}, \textit{Inflation}, and \textit{Interest Rates} relative to the Fed. Finally, \textit{Behavioral Economics} and \textit{International Trade} display mixed trends across the two institutions. The exam of Figure \ref{fig:pairwise} also reveals the dynamic pattern of the topics, that can be broadly classified according to their temporal trajectories: some display a constant presence over the years, albeit with periodic fluctuations (\textit{Employment}, \textit{Financial Markets}, \textit{Forward Guidance}, \textit{Interest Rates}, \textit{International Trade}); others exhibit a progressive increase in attention (\textit{Climate Change}); a third group reveals a gradual decline in relevance over time (\textit{Industries}, \textit{Inequality}, \textit{Inflation}); and a few are characterized by sporadic peaks of interest at specific moments (\textit{Behavioral Economics}, \textit{Fiscal Policy}).
+\review{
+The pairwise representation of topics per institution in Figure~\ref{fig:pairwise} shows that \textit{Financial Markets} and \textit{Interest Rates} are the most distinctly Fed-weighted topics, whereas the ECB devotes systematically more attention to \textit{Inflation}. \textit{Interest Rates} is the single topic where both institutions achieve near-equal shares, constituting the primary category for each. \textit{Fiscal Policy}, \textit{International Trade}, \textit{Inequality}, and \textit{Behavioral Economics} remain marginal for both, with no persistent directional gap. The examination of Figure~\ref{fig:pairwise} also reveals distinct temporal trajectories: \textit{Interest Rates}, \textit{Financial Markets}, and \textit{Employment} display a stable core presence with year-to-year fluctuations; \textit{Climate Change} is virtually absent before 2018 and thereafter exhibits a sharp, monotonic rise driven predominantly by the ECB; \textit{Forward Guidance}, \textit{Industries}, \textit{Inequality}, and \textit{International Trade} follow a gradual decline over the sample period; \textit{Inflation} shows a more complex trajectory, with a pronounced ECB-led peak in the early 2000s, a trough in the 2010s, and a modest revival from 2022 onward; and \textit{Behavioral Economics} and \textit{Fiscal Policy} are characterized by episodic spikes without a sustained directional trend.
+}
 
 \begin{figure}[!h]
     \centering
@@ -444,16 +480,9 @@ The pairwise representation of topics per institution in Figure~\ref{fig:pairwis
 \end{figure}
 
 
-As a final note, the ECB appears to cover a broader variety of topics, whereas the Fed remains more concentrated on \textit{Financial Markets}. To quantify this, we computed the normalized Shannon entropy for each year (Figure~\ref{fig:shannon}), where values close to 0 indicate strong concentration on few topics and values close to 1 denote a perfectly uniform distribution across topics.
-%\paola{io intendevo l'indice di eterogeneità di Gini, non quello di concentrazione. Usare quello di concentrazione è corretto, ma non vorrei creasse confusione visto che l'articolo tratta questioni economiche e in economia si usa l'indice di concentrazione per misurare le disuguaglianze (che tra l'altro è uno dei topic). Per tagliare la testa al toro lascerei in pace Gini e userei l'indice di entropia di Shannon normalizzato $-\frac{\sum_{i=1}^k f_i \ln(f_i)}{\ln(k)}$} \nauel{Sì, scusami io avevo pensato all'indice di Gini di concentrazione (venendo dal mondo economico) usando questa formulazione $G = \frac{1}{2\,n^2\,\bar{x}} \sum_{i=1}^{n} \sum_{j=1}^{n} \left| x_i - x_j \right|$, questa sera lo sostituisco con Shannon}
- The results show that the ECB consistently exhibits higher entropy values, indicating a broader and more diversified coverage of topics compared to the Fed.
- %\nauel{Così è la bozza di come l'ho riscritto. Ti lascio delle domande/osservazioni: 
-%\begin{itemize}
-    %\item  serve usare il formato "Findings 1: [...]" in modo da essere consistente con i Findings successivi? (anche se per il momento ho aggiornato la numerazione) \paola{a dire il vero nella parte successiva suggerisco di eliminare direttamente i titoletti ``Findings'' perchè i risultati sono già tutti divisi in sottosezioni, mi pare ridondante. Quindi non lo metterei nemmeno qui} \nauel{sono d'accordo -- riformatto i Findings}
-    %\item ho tolto il riferimento agli anni, crea confusione e aggiunge poco all'analisi \paola{sono d'accordo}
-    %\item è necessario definire formalmente il Gini Index? \paola{considerato che io intendevo una cosa e tu un'altra (entrambe corrette), lo sostituirei con l'entropia di Shannon normalizzata e si può evitare di definirla formalmente ma direi che valori prossimi a 1 indicano maggiore varietà di argomenti e valori prossimi a 0 indicano maggiore attenzione a pochi argomenti.}
-%\end{itemize}
-%}
+As a final note, the ECB appears to cover a broader variety of topics, whereas the Fed remains more concentrated on \textit{Financial Markets} \review{and \textit{Interest Rates}}. To quantify this, we computed the normalized Shannon entropy for each year (Figure~\ref{fig:shannon}), where values close to 0 indicate strong concentration on few topics and values close to 1 denote a perfectly uniform distribution across topics.
+
+The results show that the ECB consistently exhibits higher entropy values, indicating a broader and more diversified coverage of topics compared to the Fed.
  \begin{figure}[!h]
     \centering
     \includegraphics[width=\textwidth]{review/figs/shannon-graph.png}
@@ -471,7 +500,7 @@ Once a single centroid vector is obtained per topic, we can compute distance met
     \centering
     \begin{subfigure}[t]{0.7\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{review/figs/region_distance_per year.png}
+        \includegraphics[width=\linewidth]{review/figs/region_distance_per_year.png}
         \caption{Per Year (row-normalized)}
         \label{fig:centroids_per_year}
     \end{subfigure}
@@ -486,8 +515,10 @@ Once a single centroid vector is obtained per topic, we can compute distance met
     \label{fig:centroids_comparison}
 \end{figure}
 
-The analysis of the latter highlights that the most semantically divergent topics between the ECB and the Fed include \textit{Climate Change}, which is the most semantically dissimilar topic, followed by \textit{Inequality}, \textit{Industries}, and \textit{Behavioral Economics}. These divergences tend to occur in relatively less prevalent topics, suggesting that differences are more pronounced in specialized or emerging areas. In contrast, high-prevalence topics such as \textit{Interest Rates} and \textit{Financial Markets} show convergence over time, indicating that both institutions maintain alignment in the core elements of their policy discussions. 
-Overall, the observed semantic divergences suggest that, except for \textit{Climate Change} (highest dissimilarity) and \textit{Employment} (one of the lowest dissimilarities), differences between the ECB and the Fed mainly concern topics related to their respective domestic economies. In contrast, the two institutions appear more aligned on globally oriented issues. This pattern indicates that internal economic topics reflect regional peculiarities, whereas shared global challenges are discussed in a more convergent manner. The marked divergence on \textit{Climate Change}, however, stands out as particularly relevant, given the topic’s increasing prominence in both monetary and policy discourse.
+\review{The analysis of the latter reveals a clear inverse relationship between topic prevalence and semantic divergence: the least frequent topics tend to be the most semantically dissimilar between institutions. \textit{Industries} stands out as the most divergent topic, followed by \textit{Fiscal Policy}, \textit{International Trade}, \textit{Climate Change}, and \textit{Inequality}, all of which are among the less prevalent in both corpora. Conversely, \textit{Interest Rates} and \textit{Financial Markets}, the two most prevalent topics, display consistently low distances throughout the sample, confirming that the institutions maintain a closely aligned vocabulary on the core elements of monetary policy discourse.
+Overall, this pattern suggests that less frequent topics, often tied to regionally specific concerns, are discussed with more institution-specific language, whereas high-prevalence topics shared across both central banks are associated with a more standardized vocabulary. \textit{Climate Change} represents a notable exception to this static picture: the distance between the two institutions is visibly high in the early part of the sample, when the ECB was virtually the only institution addressing the topic, and declines sharply thereafter as both institutions converged toward similar language. \textit{Industries}, by contrast, is the only topic displaying a net increase in semantic divergence over time, suggesting that regional structural differences have increasingly shaped how this topic is framed by the two institutions.
+
+}
 %\paola{interessante. Mi verrebbe da dire che -- eccetto climate change (in alto) e Employment (in basso) -- tendono ad essere divergenti su questioni che riguardano prevalentemente l'economia interna di USA e Europa, mentre sono più convergenti per quelle che sono le questioni globali. Come a dire che i temi interni seguono le specificità dell'area, mentre le due banche centrali sono più allineate sui temi condivisi. In questa chiave interpretativa, che ci sia convergenza su Employment non mi preoccupa più di tanto perchè, nonostante sia un tema di politica interna, potrebbe tranquillamente venire affrontato nello stesso modo. Invece Climate Change è di grandissimo interesse perchè così elevata divergenza su un tema così importante ed attuale sarà sicuramente da approfondire in un prossimo articolo (in questo periodo articoli su questi temi sono estremamente welcome da parte delle riviste, non perderei l'occasione), cosa che scriverei in Discussion. Questa riflessione non cancellarla, lasciala commentata anche quando avrai inserito due parole nel testo: la teniamo di promemoria anche per coinvolgere Riccardo se sarà interessato a salire a bordo.}
 
 \subsection{Intra-institution topic semantic evolution}
@@ -535,9 +566,53 @@ Overall, the observed semantic divergences suggest that, except for \textit{Clim
     \label{fig:centroids_all}
 \end{figure}
 
-Starting from the ECB, the FB analysis reveals a substantial semantic shift for many topics in the years following the 2008 financial crisis. Again within the FB framework, \textit{Inequality} emerges as the most dissimilar topic on average, while \textit{Climate Change}, \textit{Inflation}, and \textit{Industries} reach their peak semantic divergence in 2024. For the CB framework, \textit{Financial Markets} experiences the most sudden changes, with notable spikes occurring in the early 2000s. Moreover, most of the sudden changes in policy-related discourse occur before 2009.
+\review{Starting from the ECB, the FB analysis shows \textit{International Trade} and \textit{Inequality} as the most persistently elevated topics, with consistently high normalized distances throughout the sample. \textit{Financial Markets} and \textit{Employment}, by contrast, display the mildest divergence from their respective baselines and sit at the bottom of the ranking. In the CB framework, \textit{Employment} and \textit{Inflation} emerge as the topics with the most consistent year-to-year variation, with changes distributed relatively evenly across the full sample period. \textit{Fiscal Policy} is the least volatile on a year-to-year basis.
 
-While the analysis of the Fed highlights a broadly similar pattern, though the semantic shifts are less regular and more moderate. In the FB analysis, \textit{Inflation} is the topic with the highest average dissimilarity. Within the CB framework, \textit{Industries} undergoes the most sudden changes, with spikes concentrated in the period 2020–2023. Overall, spikes are more homogeneous across years compared to the ECB.
+The Fed displays a distinct pattern in the FB analysis, where \textit{Forward Guidance} and \textit{Behavioral Economics} are the most prominently colored topics, indicating persistent drift from their baselines, while \textit{Fiscal Policy} shows the smallest cumulative shift. In the CB framework, \textit{Behavioral Economics} and \textit{Climate Change} lead the ranking with the most sustained year-to-year changes, while \textit{Employment} and \textit{Industries} sit at the bottom despite having large individual spikes, reflecting a more sporadic pattern that is not sustained across the sample.
+}
+
+
+\subsection{Macro-financial context}\label{subsec:macro}
+\review{
+To contextualise the thematic and semantic dynamics within the broader macroeconomic environment, we examine the association between annual topic frequency shares and chain semantic shifts, on one hand, and three institution-specific macro variables on the other: CPI inflation (year-on-year \%), unemployment rate (\%), and the central bank policy rate (\%). All series are retrieved from FRED (Federal Reserve Bank of St.\ Louis). For the Fed we use \texttt{CPIAUCSL} (Consumer Price Index for All Urban Consumers), \texttt{UNRATE} (Unemployment Rate), and \texttt{DFF} (Federal Funds Effective Rate), all of which pertain to the US economy. For the ECB we use \texttt{CP0000EZ19M086NEST} (Harmonized Index of Consumer Prices), \texttt{LRHUTTTTEZM156S} (Harmonised Unemployment Monthly Rates), and \texttt{ECBDFR} (ECB Deposit Facility Rate for the Euro Area), all of which pertain to the euro-area economy. This pairing ensures that the macro series correspond to each institution's own jurisdiction, so that the comparisons are economically meaningful.
+
+To link the communication dynamics to macroeconomic outcomes, we estimate the following OLS specification separately for each macro variable, on a pooled panel of institution-year observations ($r \in \{\text{Fed, ECB}\}$, $t = 2001, \ldots, 2025$):
+\begin{equation}
+    \Delta Y_{r,t} = \alpha + \beta_1\,\Delta\text{entropy}_{r,t} + \beta_2\,\overline{\text{sem}}_{r,t} + \gamma\,\mathbf{1}[\text{ECB}]_r + \varepsilon_{r,t}
+    \label{eq:ols_agg}
+\end{equation}
+where $\Delta Y_{r,t}$ is the first difference of the macro series for institution $r$ at year $t$; $\Delta\text{entropy}_{r,t}$ is the year-on-year change in Shannon entropy of the topic distribution, capturing shifts in topical concentration; $\overline{\text{sem}}_{r,t}$ is the mean chain-base cosine distance across topics, already expressed in first-difference form by construction; and $\mathbf{1}[\text{ECB}]_r$ is an institution dummy absorbing any residual level difference. All dependent variables are first-differenced to avoid spurious trends. Results are reported in Table~\ref{tab:ols_agg}.
+}
+\begin{table}[h!]
+    \centering
+    \caption{OLS aggregate regressions. HC3 robust standard errors in parentheses.}
+    \label{tab:ols_agg}
+    \begin{tabular}{lccc}
+        \toprule
+         & (1) & (2) & (3) \\
+         & $\Delta$CPI & $\Delta$Unemployment & $\Delta$Policy Rate \\
+        \midrule
+        $\Delta$entropy      &  2.103   & $-1.597^{*}$  &  1.054   \\
+                             & (1.410)  &  (0.890)      & (1.000)  \\[4pt]
+        Mean sem.\ shift     & $-4.193$ &  $25.817^{*}$ & $-24.330^{**}$ \\
+                             & (17.570) & (15.551)      &  (9.947) \\[4pt]
+        ECB                  & $-0.052$ &   0.114       & $-0.118$ \\
+                             &  (0.491) &  (0.272)      &  (0.316) \\
+        \midrule
+        $N$                  & 50       & 48            & 50       \\
+        $R^2$                & 0.043    & 0.166         & 0.112    \\
+        \bottomrule
+    \end{tabular}
+    \par\smallskip\footnotesize{$^{*}p<0.10$,\ $^{**}p<0.05$,\ $^{***}p<0.01$.}
+\end{table}
+
+\review{
+For unemployment (column 2), both regressors achieve marginal statistical significance ($p < 0.10$). The change in entropy enters with a negative coefficient ($-1.60$), suggesting that years in which central bank discourse becomes more dispersed across topics are associated with declining unemployment; that is, broader conversational scope in policy communication tends to accompany improving labour market conditions. The mean semantic shift enters with a positive coefficient ($25.82$), indicating that greater overall semantic drift in central bank language co-moves with rising unemployment ($R^2 = 0.166$). A plausible interpretation is that sudden and widespread changes in the vocabulary of central bank speeches often accompany periods of labour market stress, when institutions are compelled to address a wider range of concerns simultaneously and to adapt their communication frameworks to deteriorating economic conditions.
+
+The most precise result concerns the policy rate (column 3). The mean semantic shift is negatively associated with the first difference of the policy rate (coefficient $-24.33$, $p < 0.05$), implying that years in which central bank language undergoes larger aggregate semantic change tend to coincide with downward policy rate adjustments ($R^2 = 0.112$). This pattern is consistent with the hypothesis that major linguistic reframings in central bank communication occur disproportionately during easing cycles and crisis episodes, when institutions must articulate novel policy rationales in response to rapidly deteriorating economic conditions. 
+
+These results should be interpreted cautiously. The modest sample size and low adjusted $R^2$ values limit the scope for strong causal inference, and the observed associations may partly reflect common exposure to shared macroeconomic episodes rather than a directional link from communication to outcomes. Nevertheless, the findings provide exploratory evidence that the thematic and semantic dynamics documented in this study are not disconnected from observable macroeconomic cycles, lending support to the view that the language of central bank communication carries information relevant to understanding the evolution of monetary policy stances over time.
+}
 
 
 \section{Conclusion}\label{sec5}
@@ -547,13 +622,14 @@ While the analysis of the Fed highlights a broadly similar pattern, though the s
 %The main strength of this study remains the integration of TWEC and BERTopic within an economic time series framework. While key limitations include reliance solely on official speeches; expanding the corpus to include media coverage, interviews, or social media could enrich the analysis. Future research could investigate links between semantic shifts and macroeconomic indicators, such as market volatility, inflation rates, and unemployment.
 
 %Overall, embedding-based methods offer a systematic framework for tracking alignment, divergence, and the evolution of central bank communications over time, supporting both research and practical policy applications.
-This article proposed an innovative framework combining BERTopic and TWEC within an economic time series setting, incorporating the classical economic concepts of Fixed-Base and Chain-Base analyses to capture long-term and short-term semantic shifts in central bank communications. The approach was designed to answer two main questions: what do central banks talk about; and how do they talk about it relative to each other? This was possible by capturing both thematic distributions and semantic dynamics over time, enabling a joint interpretation of topic distribution and semantic shifts across institutions' speeches. Applying this framework to speeches from the ECB and the Fed (2000–2024) revealed similar yet different communication patterns. In fact, both institutions show similar behavior on core topics such as \textit{Financial Markets} and \textit{Interest Rates}, which consistently rank as the most discussed and semantically aligned topics. 
+This article proposed an innovative framework combining BERTopic and TWEC within an economic time series setting, incorporating the classical economic concepts of Fixed-Base and Chain-Base analyses to capture long-term and short-term semantic shifts in central bank communications. The approach was designed to answer two main questions: what do central banks talk about; and how do they talk about it relative to each other? This was possible by capturing both thematic distributions and semantic dynamics over time, enabling a joint interpretation of topic distribution and semantic shifts across institutions' speeches. Applying this framework to speeches from the ECB and the Fed (2000–\review{2025}) revealed similar yet different communication patterns. In fact, both institutions show similar behavior on core topics such as \textit{Financial Markets} and \textit{Interest Rates}, which consistently rank as the most discussed and semantically aligned topics.
 
-Instead, divergences emerge mainly in themes reflecting regional priorities, such as \textit{Inequality}, \textit{Industries}, and \textit{Fiscal Policy}. These results suggest that differences are more pronounced on topics rooted in domestic economic contexts, whereas communication appears more convergent on global challenges. However, in sharp contrast with this trend, \textit{Climate Change} highlights the most substantial semantic distance, standing out as the most divergent and rapidly evolving theme.
+Instead, divergences emerge mainly in themes reflecting regional priorities, such as \textit{Inequality}, \textit{Industries}, and \textit{Fiscal Policy}. These results suggest that differences are more pronounced on topics rooted in domestic economic contexts, whereas communication appears more convergent on global challenges. However, in sharp contrast with this trend, \textit{Climate Change} highlights the most substantial semantic distance, standing out as the most divergent and rapidly evolving theme. \review{It should be noted, however, that this divergence is most pronounced in the early part of the sample, when only the ECB was actively addressing the topic; the two institutions have since converged substantially in their climate-related vocabulary.}
 
-From a temporal perspective, the ECB exhibits sharper semantic shifts particularly around the 2008 financial crisis and in the recent acceleration of climate-related discourse, while the Fed maintains a steadier evolution. The combined Fixed-Base and Chain-Base analyses offer a comprehensive view of both long-term structural transformations and short-term fluctuations within the intra-institutional narratives.
+From a temporal perspective, the ECB exhibits sharper semantic shifts particularly around the 2008 financial crisis and in the recent acceleration of climate-related discourse, while the Fed maintains a steadier evolution. The combined Fixed-Base and Chain-Base analyses offer a comprehensive view of both long-term structural transformations and short-term fluctuations within the intra-institutional narratives. \review{A preliminary investigation of the link between the derived semantic and thematic measures and macroeconomic outcomes, conducted via pooled OLS regressions, suggests that semantic drift is associated with subsequent changes in policy rates and unemployment, pointing to a potential predictive role of communication dynamics.}
 
-As final remarks, the main limitation of the study include the reliance solely on official speeches. In fact, expanding the corpus to include media coverage, interviews, or social media could enrich the analysis. Future research could instead build upon this framework by linking semantic and thematic shifts to macroeconomic indicators such as inflation, unemployment, or financial volatility, to explore whether communication patterns anticipate or respond to economic dynamics. Ultimately, the observed divergence on \textit{Climate Change} opens a promising direction for deeper investigation, given the growing relevance of sustainability incentives in fiscal policy and financial regulation, potentially highlighting different approaches to the issue.
+As final remarks, the main limitation of the study include the reliance solely on official speeches. In fact, expanding the corpus to include media coverage, interviews, or social media could enrich the analysis. \review{Future research could extend the macroeconomic linkage explored here, for instance by adopting panel VAR or local projection methods to better identify the causal direction between communication dynamics and economic outcomes.} Ultimately, the observed divergence on \textit{Climate Change} opens a promising direction for deeper investigation, given the growing relevance of sustainability incentives in fiscal policy and financial regulation, potentially highlighting different approaches to the issue.
+
 
 %\paola{io riscriverei questa sezione partendo col dire che in questo articolo è stato proposto un metodo per integrare ... .... . Questo metodo è stato sviluppato con il proposito di analizzare i discorsi.... ... ottenendo i seguenti main findings..... Termini con la future research: quella cosa sul climate change e anche la possibilità di collegare queste analisi a variabili macroeconomiche (vedi risposta che hai dato a menoncin alla discussione)}
 
@@ -593,9 +669,9 @@ As final remarks, the main limitation of the study include the reliance solely o
         \hline
         \textbf{Parameter} & \textbf{Values searched} & \textbf{Selected} \\
         \hline
-        \texttt{n\_neighbors}        & 5, 10, 15 & \textbf{15} \\
-        \texttt{min\_cluster\_size}  & 5, 10, 15 & \textbf{10} \\
-        \texttt{paragraphs\_per\_doc}& 2, 3, 5, 7, 10          & \textbf{10} \\
+        \texttt{n\_neighbors}        & 5, 10, 15 & \textbf{10} \\
+        \texttt{min\_cluster\_size}  & 5, 10, 15 & \textbf{15} \\
+        \texttt{paragraphs\_per\_doc}& 2, 3, 5, 7, 10          & \textbf{7} \\
         \hline
         \multicolumn{3}{l}{\textbf{Fixed parameters}} \\
         \hline
@@ -623,7 +699,7 @@ As final remarks, the main limitation of the study include the reliance solely o
         \hline
         Embedding Model & all-MiniLM-L6-v2 (SentenceTransformers) \\
         Similarity Metric & Cosine similarity \\
-        Assignment Threshold ($\tau^*$) & 0.25 \\
+        Assignment Threshold ($\tau^*$) & 0.30 \\
         Topics & \\
         \quad 1 & Monetary policy and interest rates \\
         \quad 2 & Inflation and consumer prices \\
@@ -669,9 +745,9 @@ As final remarks, the main limitation of the study include the reliance solely o
         \hline
         \textbf{Analysis} & \textbf{Variants tested} & \textbf{Min $\rho$} & \textbf{Median $\rho$} \\
         \hline
-        Seed stability    & 1, 42, 456, 789, 1000          & 1.000 & 1.000 \\
-        Embedding size    & 50, 100, 200 (window$=5$)      & 0.950 & 0.983 \\
-        Context window    & 3, 5, 10 (size$=100$)          & 0.967 & 0.983 \\
+        Seed stability    & 1, 42, 456, 789, 1000          & 0.991 & 1.000 \\
+        Embedding size    & 50, 100, 200 (window$=5$)      & 0.927 & 0.964 \\
+        Context window    & 3, 5, 10 (size$=100$)          & 0.964 & 0.964 \\
         \hline
     \end{tabular}
 \end{table}
