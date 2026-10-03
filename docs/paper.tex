@@ -501,14 +501,14 @@ The results show that the ECB consistently exhibits higher entropy values, indic
 
 
 \subsection{Cross-institution semantic alignment}\label{subsec:cross}
-Once a single centroid vector is obtained per topic, we can compute distance metrics by applying the same principle used for single word embeddings introduced in \ref{subsec33}. Specifically, we compute the cosine distance between the centroid vectors of corresponding topics across institutions (ECB vs. Fed) for each year. Distances were normalized both column-wise (per year) and globally (per year and topic) to facilitate comparison. Moreover, rows are sorted by the average value per topic to better highlight the most distant topics. Figure~\ref{fig:centroids_comparison} illustrates these comparisons, showing annual distances throughout the periods.
+Once a single centroid vector is obtained per topic, we can compute distance metrics by applying the same principle used for single word embeddings introduced in \ref{subsec33}. Specifically, we compute the cosine distance between the centroid vectors of corresponding topics across institutions (ECB vs. Fed) for each year. Distances were \reviewtwo{min-max} normalized both column-wise (per year\reviewtwo{, i.e. across topics within each year}) and globally (\reviewtwo{across all topics and years}) to facilitate comparison. Moreover, rows are sorted by the average value per topic to better highlight the most distant topics. Figure~\ref{fig:centroids_comparison} illustrates these comparisons, showing annual distances throughout the periods.
 %% REGIONS
 \begin{figure}[!h]
     \centering
     \begin{subfigure}[t]{0.7\linewidth}
         \centering
         \includegraphics[width=\linewidth]{review/figs/region_distance_per_year.png}
-        \caption{Per Year (row-normalized)}
+        \caption{Per Year (\reviewtwo{column-normalized})}
         \label{fig:centroids_per_year}
     \end{subfigure}
     \hfill
@@ -524,7 +524,7 @@ Once a single centroid vector is obtained per topic, we can compute distance met
 
 The analysis of the latter reveals a clear inverse relationship between topic prevalence and semantic divergence: the least frequent topics tend to be the most semantically dissimilar between institutions. \textit{Industries} stands out as the most divergent topic, followed by \textit{Fiscal Policy}, \textit{International Trade}, \textit{Climate Change}, and \textit{Inequality}, all of which are among the less prevalent in both corpora. Conversely, \textit{Interest Rates} and \textit{Financial Markets}, the two most prevalent topics, display consistently low distances throughout the sample, confirming that the institutions maintain a closely aligned vocabulary on the core elements of monetary policy discourse. 
 
-Overall, this pattern suggests that less frequent topics, often tied to regionally specific concerns, are discussed with more institution-specific language, whereas high-prevalence topics shared across both central banks are associated with a more standardized vocabulary. \textit{Climate Change} represents a notable exception to this static picture: the distance between the two institutions is visibly high in the early part of the sample, when the ECB was virtually the only institution addressing the topic, and declines sharply thereafter as both institutions converged toward similar language. \textit{Industries}, by contrast, is the only topic displaying a net increase in semantic divergence over time, suggesting that regional structural differences have increasingly shaped how this topic is framed by the two institutions.
+Overall, this pattern suggests that less frequent topics, often tied to regionally specific concerns, are discussed with more institution-specific language, whereas high-prevalence topics shared across both central banks are associated with a more standardized vocabulary. \textit{Climate Change} represents a notable exception to this static picture: the distance between the two institutions is visibly high in the early part of the sample, when the ECB was virtually the only institution addressing the topic, and declines sharply thereafter as both institutions converged toward similar language. \textit{Industries}, by contrast, is the only topic displaying a net increase in semantic divergence over time, suggesting that regional structural differences have increasingly shaped how this topic is framed by the two institutions. \reviewtwo{We also averaged the yearly distances over four sub-periods (2000--2007, 2008--2012, 2013--2019 and 2020--2025) to verify that these patterns do not depend on a specific part of the sample. In every sub-period \textit{Interest Rates} and \textit{Financial Markets} remain the least divergent topics and \textit{Industries} remains among the most divergent, and the sub-period rankings are strongly correlated with the full-sample ranking (Spearman $\rho$ between 0.81 and 0.96).}
 
 \subsection{Intra-institution topic semantic evolution}
  To further analyze the semantic dynamics within each central bank, we computed normalized centroid distances over time using both a FB and CB approach introduced in \ref{subsec33} Table \ref{tab:numind}. Here again, rows are sorted by average per topic, to better highlight the topics that (on average) exhibit the most remarkable shifts over time. Figure~\ref{fig:centroids_all} shows these intra-institutional shifts for ECB and Fed, respectively.
@@ -567,7 +567,7 @@ Overall, this pattern suggests that less frequent topics, often tied to regional
         \end{subfigure}
         \label{fig:centroids_USA}
     \end{subfigure}
-    \caption{FB (top) and CB (bottom) topic semantic evolution in ECB (right) and Fed (left)}
+    \caption{FB (top) and CB (bottom) topic semantic evolution in ECB (left) and Fed (right)}
     \label{fig:centroids_all}
 \end{figure}
 
