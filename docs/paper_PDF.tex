@@ -85,7 +85,7 @@ grestore
 % please place your own definitions here and don't use \def but
 % \newcommand{}{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\newcommand{\reviewtwo}[1]{{\color{teal}{#1}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Insert the name of "your journal" with
@@ -288,7 +288,7 @@ where $\text{DB}_{\text{norm}}(\tau) = 1/(1 + \text{DB}(\tau))$ is a normalised 
 
 The label assignment rules and the topics are displayed in the Appendix, Table \ref{tab:label_assigner}. In this way, the initial $M=201$ topics extracted by BERTopic, are assigned to $N=11$ higher-level categories based on predefined labels (Table \ref{tab:unique_words}).
 
-To assess the stability of BERTopic with respect to its random initialisation, we re-fitted the model under the same five seeds used for TWEC, varying only the UMAP \texttt{random\_state} and keeping $\tau^*$ fixed. The resulting topic distributions are stable with yearly category shares that are strongly correlated across runs (mean Pearson $r = 0.959$), as well as the rankings of the categories for the Fed and the ECB (mean Spearman $\rho = 0.889$ and $0.819$; Appendix, Table~\ref{tab:bertopic_stability}).
+\reviewtwo{To assess the stability of BERTopic with respect to its random initialisation, we re-fitted the model under the same five seeds used for TWEC, varying only the UMAP \texttt{random\_state} and keeping $\tau^*$ fixed. The resulting topic distributions are stable with yearly category shares that are strongly correlated across runs (mean Pearson $r = 0.959$), as well as the rankings of the categories for the Fed and the ECB (mean Spearman $\rho = 0.889$ and $0.819$; Appendix, Table~\ref{tab:bertopic_stability}).}
 
 \begin{table}[h!]
     \centering
@@ -428,7 +428,7 @@ The results show that the ECB consistently exhibits higher entropy values, indic
 
 
 \subsection{Cross-institution semantic alignment}\label{subsec:cross}
-Once a single centroid vector is obtained per topic, we can compute distance metrics by applying the same principle used for single word embeddings introduced in \ref{subsec33}. Specifically, we compute the cosine distance between the centroid vectors of corresponding topics across institutions (ECB vs. Fed) for each year. Distances were min-max normalized both column-wise (per year, i.e. across topics within each year) and globally (across all topics and years) to facilitate comparison. Moreover, rows are sorted by the average value per topic to better highlight the most distant topics. Figure~\ref{fig:centroids_comparison} illustrates these comparisons, showing annual distances throughout the periods.
+Once a single centroid vector is obtained per topic, we can compute distance metrics by applying the same principle used for single word embeddings introduced in \ref{subsec33}. Specifically, we compute the cosine distance between the centroid vectors of corresponding topics across institutions (ECB vs. Fed) for each year. Distances were \reviewtwo{min-max} normalized both column-wise (per year\reviewtwo{, i.e. across topics within each year}) and globally (\reviewtwo{across all topics and years}) to facilitate comparison. Moreover, rows are sorted by the average value per topic to better highlight the most distant topics. Figure~\ref{fig:centroids_comparison} illustrates these comparisons, showing annual distances throughout the periods.
 
 %% REGIONS
 \begin{figure}[!h]
@@ -436,7 +436,7 @@ Once a single centroid vector is obtained per topic, we can compute distance met
     \begin{subfigure}[t]{0.7\linewidth}
         \centering
         \includegraphics[width=\linewidth]{review/figs/region_distance_per_year.png}
-        \caption{Per Year (column-normalized)}
+        \caption{Per Year (\reviewtwo{column-normalized})}
         \label{fig:centroids_per_year}
     \end{subfigure}
     \hfill
@@ -452,7 +452,7 @@ Once a single centroid vector is obtained per topic, we can compute distance met
 
 The analysis of the latter reveals a clear inverse relationship between topic prevalence and semantic divergence: the least frequent topics tend to be the most semantically dissimilar between institutions. \textit{Industries} stands out as the most divergent topic, followed by \textit{Fiscal Policy}, \textit{International Trade}, \textit{Climate Change}, and \textit{Inequality}, all of which are among the less prevalent in both corpora. Conversely, \textit{Interest Rates} and \textit{Financial Markets}, the two most prevalent topics, display consistently low distances throughout the sample, confirming that the institutions maintain a closely aligned vocabulary on the core elements of monetary policy discourse. 
 
-Overall, this pattern suggests that less frequent topics, often tied to regionally specific concerns, are discussed with more institution-specific language, whereas high-prevalence topics shared across both central banks are associated with a more standardized vocabulary. \textit{Climate Change} represents a notable exception to this static picture: the distance between the two institutions is visibly high in the early part of the sample, when the ECB was virtually the only institution addressing the topic, and declines sharply thereafter as both institutions converged toward similar language. \textit{Industries}, by contrast, is the only topic displaying a net increase in semantic divergence over time, suggesting that regional structural differences have increasingly shaped how this topic is framed by the two institutions. Moreover, to assess the robustness of these results, we averaged the yearly distances over four sub-periods (2000--2007, 2008--2012, 2013--2019 and 2020--2025), verifying that the patterns are not driven by a period that differs markedly from the rest of the sample. In every sub-period \textit{Interest Rates} and \textit{Financial Markets} remain the least divergent topics and \textit{Industries} remains among the most divergent, and the sub-period rankings are strongly correlated with the full-sample ranking (Spearman $\rho$ between 0.81 and 0.96).
+Overall, this pattern suggests that less frequent topics, often tied to regionally specific concerns, are discussed with more institution-specific language, whereas high-prevalence topics shared across both central banks are associated with a more standardized vocabulary. \textit{Climate Change} represents a notable exception to this static picture: the distance between the two institutions is visibly high in the early part of the sample, when the ECB was virtually the only institution addressing the topic, and declines sharply thereafter as both institutions converged toward similar language. \textit{Industries}, by contrast, is the only topic displaying a net increase in semantic divergence over time, suggesting that regional structural differences have increasingly shaped how this topic is framed by the two institutions. \reviewtwo{Moreover, to assess the robustness of these results, we averaged the yearly distances over four sub-periods (2000--2007, 2008--2012, 2013--2019 and 2020--2025), verifying that the patterns are not driven by a period that differs markedly from the rest of the sample. In every sub-period \textit{Interest Rates} and \textit{Financial Markets} remain the least divergent topics and \textit{Industries} remains among the most divergent, and the sub-period rankings are strongly correlated with the full-sample ranking (Spearman $\rho$ between 0.81 and 0.96).}
 
 \subsection{Intra-institution topic semantic evolution}
  To further analyze the semantic dynamics within each central bank, we computed normalized centroid distances over time using both a FB and CB approach introduced in \ref{subsec33} Table \ref{tab:numind}. Here again, rows are sorted by average per topic, to better highlight the topics that (on average) exhibit the most remarkable shifts over time. Figure~\ref{fig:centroids_all} shows these intra-institutional shifts for ECB and Fed, respectively.
@@ -551,11 +551,11 @@ These results should be interpreted cautiously. The modest sample size and low a
 
 This article proposed an innovative framework combining BERTopic and TWEC within an economic time series setting, incorporating the classical economic concepts of Fixed-Base and Chain-Base analyses to capture long-term and short-term semantic shifts in central bank communications. The approach was designed to answer two main questions: what do central banks talk about; and how do they talk about it relative to each other? This was possible by capturing both thematic distributions and semantic dynamics over time, enabling a joint interpretation of topic distribution and semantic shifts across institutions' speeches. Applying this framework to speeches from the ECB and the Fed (2000–2025) revealed similar yet different communication patterns. In fact, both institutions show similar behavior on core topics such as \textit{Financial Markets} and \textit{Interest Rates}, which consistently rank as the most discussed and semantically aligned topics.
 
-Instead, divergences emerge mainly in themes reflecting regional priorities, such as \textit{Industries}, \textit{Fiscal Policy} and \textit{International Trade}. These results suggest that differences are more pronounced on topics rooted in domestic economic contexts, whereas communication appears more convergent on global challenges. However, in sharp contrast with this trend, \textit{Climate Change} stands out as one of the most divergent topics, despite being a global challenge. It should be noted, however, that this divergence is most pronounced in the early part of the sample, when only the ECB was actively addressing the topic; the two institutions have since converged substantially in their climate-related vocabulary.
+Instead, divergences emerge mainly in themes reflecting regional priorities, such as \textit{Industries}, \textit{Fiscal Policy} and \textit{International Trade}. These results suggest that differences are more pronounced on topics rooted in domestic economic contexts, whereas communication appears more convergent on global challenges. However, in sharp contrast with this trend, \textit{Climate Change} \reviewtwo{stands out as one of the most divergent topics, despite being a global challenge}. It should be noted, however, that this divergence is most pronounced in the early part of the sample, when only the ECB was actively addressing the topic; the two institutions have since converged substantially in their climate-related vocabulary.
 
-From a temporal perspective, a consistent finding is the stability of Fiscal Policy in central bank discourse: across both the ECB and the Fed, and across both stability measures, it ranks among the least volatile topics. Despite shifting macroeconomic conditions, central banks' communicative stance on fiscal matters has remained largely unchanged. Moreover, a preliminary investigation of the link between the derived semantic and thematic measures and macroeconomic outcomes, conducted via pooled OLS regressions, suggests that semantic drift is associated with contemporaneous changes in policy rates and unemployment.
+From a temporal perspective, a consistent finding is the stability of Fiscal Policy in central bank discourse: across both the ECB and the Fed, and across both stability measures, it ranks among the least volatile topics. Despite shifting macroeconomic conditions, central banks' communicative stance on fiscal matters has remained largely unchanged. Moreover, a preliminary investigation of the link between the derived semantic and thematic measures and macroeconomic outcomes, conducted via pooled OLS regressions, suggests that semantic drift is associated with \reviewtwo{contemporaneous} changes in policy rates and unemployment.
 
-As final remarks, the main limitation of the study includes the reliance solely on official speeches. In fact, expanding the corpus to include media coverage, interviews, or social media could enrich the analysis. Future research could extend the macroeconomic linkage explored here, for instance by adopting panel VAR or local projection methods to better identify the causal direction between communication dynamics and economic outcomes. Ultimately, the rapid convergence of the two institutions' climate-related language, after an initial phase led by the ECB, opens a promising direction for deeper investigation, given the growing relevance of sustainability incentives in fiscal policy and financial regulation, potentially highlighting different approaches to the issue.
+As final remarks, the main limitation of the study includes the reliance solely on official speeches. In fact, expanding the corpus to include media coverage, interviews, or social media could enrich the analysis. Future research could extend the macroeconomic linkage explored here, for instance by adopting panel VAR or local projection methods to better identify the causal direction between communication dynamics and economic outcomes. Ultimately, the \reviewtwo{rapid convergence of the two institutions' climate-related language, after an initial phase led by the ECB,} opens a promising direction for deeper investigation, given the growing relevance of sustainability incentives in fiscal policy and financial regulation, potentially highlighting different approaches to the issue.
 
 \newpage
 \begin{appendices}
@@ -590,17 +590,17 @@ As final remarks, the main limitation of the study includes the reliance solely 
 %% BERTOPIC STABILITY
 \begin{table}[h!]
     \centering
-    \caption{BERTopic seed stability. Agreement of the topic distributions across five UMAP
+    \caption{\reviewtwo{BERTopic seed stability. Agreement of the topic distributions across five UMAP
              random seeds (1, 42, 456, 789, 1000) with $\tau^*=0.30$ fixed; mean and median over the
-             10 seed pairs. The production model uses seed$=1$.}
+             10 seed pairs. The production model uses seed$=1$.}}
     \label{tab:bertopic_stability}
     \begin{tabular}{l c c}
         \hline
-        \textbf{Measure} & \textbf{Mean} & \textbf{Median} \\
+        \reviewtwo{\textbf{Measure}} & \reviewtwo{\textbf{Mean}} & \reviewtwo{\textbf{Median}} \\
         \hline
-        Yearly category shares (Pearson $r$)      & 0.959 & 0.963 \\
-        Prevalence ranking, Fed (Spearman $\rho$) & 0.889 & 0.909 \\
-        Prevalence ranking, ECB (Spearman $\rho$) & 0.819 & 0.815 \\
+        \reviewtwo{Yearly category shares (Pearson $r$)}      & \reviewtwo{0.959} & \reviewtwo{0.963} \\
+        \reviewtwo{Prevalence ranking, Fed (Spearman $\rho$)} & \reviewtwo{0.889} & \reviewtwo{0.909} \\
+        \reviewtwo{Prevalence ranking, ECB (Spearman $\rho$)} & \reviewtwo{0.819} & \reviewtwo{0.815} \\
         \hline
     \end{tabular}
 \end{table}
@@ -664,26 +664,26 @@ As final remarks, the main limitation of the study includes the reliance solely 
         Embedding Model & \multicolumn{3}{l}{all-MiniLM-L6-v2} \\
         Similarity Metric & \multicolumn{3}{l}{Cosine similarity} \\
         Assignment Threshold ($\tau^*$) & \multicolumn{3}{l}{0.30} \\
-        Total docs & \multicolumn{3}{l}{35,392} \\
-        Noise docs (HDBSCAN, $-1$) & \multicolumn{3}{l}{17,693 (49.99\%)} \\
-        Labeled docs & \multicolumn{3}{l}{15,407 (43.53\%)} \\
+        \reviewtwo{Total docs} & \multicolumn{3}{l}{\reviewtwo{35,392}} \\
+        \reviewtwo{Noise docs (HDBSCAN, $-1$)} & \multicolumn{3}{l}{\reviewtwo{17,693 (49.99\%)}} \\
+        \reviewtwo{Labeled docs} & \multicolumn{3}{l}{\reviewtwo{15,407 (43.53\%)}} \\
         \hline
-        \textbf{Topics} & \textbf{\# BERTopics} & \textbf{Docs} & \textbf{\%} \\
+        \reviewtwo{\textbf{Topics}} & \reviewtwo{\textbf{\# BERTopics}} & \reviewtwo{\textbf{Docs}} & \reviewtwo{\textbf{\%}} \\
         \hline
-        1 - Monetary policy and interest rates & 53 & 5,422 & 30.6 \\
-        2 - Inflation and consumer prices & 9 & 939 & 5.3 \\
-        3 - Labor market and employment & 20 & 1,164 & 6.6 \\
-        4 - Financial markets and banking & 64 & 6,296 & 35.6 \\
-        5 - Fiscal policy and government spending & 4 & 302 & 1.7 \\
-        6 - International trade and global economy & 7 & 242 & 1.4 \\
-        7 - Economic development and inequality & 1 & 16 & 0.1 \\
-        8 - Climate change and sustainable finance & 1 & 536 & 3.0 \\
-        9 - Industrial and sectoral economics & 4 & 211 & 1.2 \\
-        10 - Behavioral economics and expectations & 2 & 47 & 0.3 \\
-        11 - Policy communication and forward guidance & 2 & 232 & 1.3 \\
-        Unlabeled & 34 & 2,292 & 12.9 \\
+        1 - Monetary policy and interest rates & \reviewtwo{53} & \reviewtwo{5,422} & \reviewtwo{30.6} \\
+        2 - Inflation and consumer prices & \reviewtwo{9} & \reviewtwo{939} & \reviewtwo{5.3} \\
+        3 - Labor market and employment & \reviewtwo{20} & \reviewtwo{1,164} & \reviewtwo{6.6} \\
+        4 - Financial markets and banking & \reviewtwo{64} & \reviewtwo{6,296} & \reviewtwo{35.6} \\
+        5 - Fiscal policy and government spending & \reviewtwo{4} & \reviewtwo{302} & \reviewtwo{1.7} \\
+        6 - International trade and global economy & \reviewtwo{7} & \reviewtwo{242} & \reviewtwo{1.4} \\
+        7 - Economic development and inequality & \reviewtwo{1} & \reviewtwo{16} & \reviewtwo{0.1} \\
+        8 - Climate change and sustainable finance & \reviewtwo{1} & \reviewtwo{536} & \reviewtwo{3.0} \\
+        9 - Industrial and sectoral economics & \reviewtwo{4} & \reviewtwo{211} & \reviewtwo{1.2} \\
+        10 - Behavioral economics and expectations & \reviewtwo{2} & \reviewtwo{47} & \reviewtwo{0.3} \\
+        11 - Policy communication and forward guidance & \reviewtwo{2} & \reviewtwo{232} & \reviewtwo{1.3} \\
+        \reviewtwo{Unlabeled} & \reviewtwo{34} & \reviewtwo{2,292} & \reviewtwo{12.9} \\
         \hline
-        Total clustered & 201 & 17,699 & 100 \\
+        \reviewtwo{Total clustered} & \reviewtwo{201} & \reviewtwo{17,699} & \reviewtwo{100} \\
         \hline
     \end{tabular}
 \end{table}
