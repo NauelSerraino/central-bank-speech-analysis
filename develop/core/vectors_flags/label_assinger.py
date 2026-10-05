@@ -1,7 +1,7 @@
 import re
 import numpy as np
 from sentence_transformers import SentenceTransformer, util
-from sklearn.metrics import silhouette_score
+from sklearn.metrics.pairwise import cosine_distances
 
 class LabelAssigner:
     _instance = None
@@ -39,10 +39,7 @@ class LabelAssigner:
     
     def optimal_threshold(self, embs, thresholds=np.arange(0.2, 0.60, 0.05)):
         sims = util.cos_sim(self.label_embs, embs).numpy()
-        best_t, best_score = None, -1
-
-        print(f"{'Threshold':>10} | {'Silhouette':>10} | {'Coverage':>8} | {'Combined':>10} | {'#Assigned labels':>15}")
-        print("-" * 65)
+        best_t, best_score, best_db_norm, best_coverage = None, -1, None, None
 
         for t in thresholds:
             labels = []
@@ -53,24 +50,31 @@ class LabelAssigner:
             labels = np.array(labels)
             valid_idx = labels != -1
 
-            if len(np.unique(labels[valid_idx])) < 2:
-                print(f"{t:10.2f} | {'-':>10} | {'-':>8} | {'-':>10} | {0:15}")
-                continue  # silhouette needs at least 2 clusters
+            n_valid    = int(valid_idx.sum())
+            n_clusters = len(np.unique(labels[valid_idx]))
+            if n_clusters < 2 or n_clusters >= n_valid:
+                continue
 
-            sil_score = silhouette_score(embs[valid_idx], labels[valid_idx], metric="cosine")
+            e = embs[valid_idx]
+            lv = labels[valid_idx]
+            unique_labels = np.unique(lv)
+            centroids = np.stack([e[lv == k].mean(axis=0) for k in unique_labels])
+            dists_to_c = cosine_distances(e, centroids)
+            s = np.array([dists_to_c[lv == k, i].mean() for i, k in enumerate(unique_labels)])
+            c_dists = cosine_distances(centroids)
+            np.fill_diagonal(c_dists, np.inf)
+            R = ((s[:, None] + s[None, :]) / c_dists).max(axis=1)
+            db = R.mean()
+            db_norm = 1 / (1 + db)
             assigned_labels = set(labels[valid_idx])
             coverage = len(assigned_labels) / len(self.labels)
 
-            alpha = 0.40
-            combined_score = alpha * sil_score + (1 - alpha) * coverage
-
-            print(f"{t:10.2f} | {sil_score:10.4f} | {coverage:8.4f} | {combined_score:10.4f} | {len(assigned_labels):15}")
+            combined_score = (db_norm + coverage) / 2
 
             if combined_score > best_score:
                 best_t, best_score = t, combined_score
-
-        print(f"\nBest threshold = {best_t:.2f}, best combined score = {best_score:.4f}")
-        return best_t, best_score
+                best_db_norm, best_coverage = db_norm, coverage
+        return best_t, best_score, best_db_norm, best_coverage
 
 
     def _auto_threshold(self, word_embs):
@@ -94,8 +98,7 @@ class LabelAssigner:
         unlabelled_topics = df['word_clean'].dropna().unique()
         unlabelled_topics_emb = self.model.encode(unlabelled_topics, convert_to_numpy=True)
 
-        self.threshold, sil_score = self.optimal_threshold(unlabelled_topics_emb)
-        print(f"Auto threshold = {self.threshold:.2f} (silhouette={sil_score:.3f})")
+        self.threshold, _, self.best_db_norm, self.best_coverage = self.optimal_threshold(unlabelled_topics_emb)
 
         sims = util.cos_sim(self.label_embs, unlabelled_topics_emb).numpy()
         word_to_label = {}

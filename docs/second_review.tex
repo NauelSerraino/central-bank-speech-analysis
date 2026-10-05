@@ -1,0 +1,223 @@
+\documentclass{report}
+
+\usepackage[english]{babel}
+\RequirePackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{soul}
+\usepackage{xcolor}
+\usepackage{fancyvrb}
+\usepackage{colortbl}
+\usepackage{float}
+\usepackage{bm}
+\usepackage[shortlabels]{enumitem}
+\usepackage{dsfont}			% indicator function
+\usepackage{amsmath, amssymb, amsfonts, amsthm, latexsym}
+\usepackage[mathscr]{euscript}
+\usepackage[authoryear]{natbib}
+\usepackage{changes}
+\usepackage{hyperref}
+\newcommand{\revrepl}[1]{\textcolor{orange}{#1}}
+\newcommand{\com}[1]{\textit{\textcolor{red}{#1}}}
+\newcommand{\cor}[1]{\textit{\textcolor{blue}{#1}}} 
+
+\newcommand{\men}{\leqslant}
+\newcommand{\may}{\geqslant}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\comp}{\mathbb C}
+\newcommand{\nat}{\mathbb N}
+\newcommand{\cont}{\mathcal C}
+\newcommand{\real}{\mathbb R}
+\newcommand{\ent}{\mathbb Z}
+\newcommand{\rac}{\mathbb Q}
+\newcommand{\abs}[1]{\left\vert#1\right\vert}
+\newcommand{\norm}[1]{\left\Vert#1\right\Vert}
+\newcommand{\conj}[1]{\left\{#1\right\}}
+\newcommand{\pa}[1]{\left(#1\right)}
+\newcommand{\ver}[1]{\underline{\textsc{#1}}}
+\newcommand{\got}[1]{\mathfrak{#1}}
+\newcommand{\tbf}[1]{{\bf{#1}}}
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+\newcommand{\To}{\longrightarrow}
+\newcommand{\M}{\mathbf{M}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\bor}{\mathcal{R}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\en}{\mathcal{E}_n}
+\newcommand{\E}{\operatorname{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\Sop}{\operatorname{Sop}}
+\newcommand{\card}{\operatorname{card}}
+\newcommand{\sig}{\operatorname{sig}}
+\newcommand{\argmin}{\operatorname{argmin}}
+\newcommand{\MU}{\bm{\mu}}
+\newcommand{\SIGMA}{\bm{\Sigma}}
+\newcommand{\OMEGA}{\bm{\Omega}}
+\newcommand{\PSI}{\bm{\Psi}}
+\newcommand{\THETA}{\bm{\Theta}}
+\newcommand{\GAMMA}{\bm{\Gamma}}
+
+\edef\@tempa#1#2{\def#1{\mathaccent\string"\noexpand\accentclass@#2
+}}
+
+\@tempa\ring{017}
+
+\theoremstyle{plain}
+
+\newcommand{\p}{\mathcal P}
+
+\renewcommand{\baselinestretch}{1.1}
+
+\newcommand\setItemnumber[1]{\setcounter{enumi}{\numexpr#1-1\relax}}
+
+%\pagestyle{empty}
+
+%\setlength{\headheight}{0.cm} \setlength{\headsep}{0.cm}
+%\setlength{\topskip}{0.cm}
+
+\usepackage[textwidth=15cm,textheight=22cm]{geometry}
+%\setlength{\oddsidemargin}{-0.25cm}
+%\setlength{\evensidemargin}{-0.25cm} %\setlength{\topmargin}{3.cm}
+%\setlength{\textwidth}{16cm}
+%\setlength{\textheight}{21.5cm}
+
+\renewcommand{\baselinestretch}{1.2}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% OUR ADD-IN
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{natbib}
+\usepackage{xcolor}
+\newcommand{\paola}[1]{{\color{orange}{\textbf{Paola}: #1}}}
+\newcommand{\marica}[1]{{\color{purple}{\textbf{Marica}: #1}}}
+\newcommand{\dani}[1]{{\color{blue}{\textbf{Dani}:#1}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+\begin{center}{\bf Response to Editor and reviewers' comments on the review of the manuscript ``Evolving narratives in central banks: a NLP approach to study convergence of topics and semantics in ECB and Fed speeches'' }
+
+\end{center}
+\vspace*{0.5cm}
+Dear Editor-in-Chief Alessandro Sapio and reviewers,
+
+\vspace*{0.3cm}
+We are very grateful for the opportunity to further revise our manuscript ``Evolving narratives in central banks: a NLP approach to study convergence of topics and semantics in ECB and Fed speeches'' for the Italian Economic Journal, and we thank the reviewer for the positive assessment of the previous revision. We carefully considered the remaining comments and below we explain how we have addressed each of them. For the revised manuscript, all changes made in this round are highlighted in teal to ease their identification. Our revised version focuses on the following key points:
+\begin{itemize}
+\item the label assignment table now reports the share of content left unlabeled and the number of BERTopic topics and documents assigned to each of the 11 categories;
+\item a new stability check shows that the BERTopic results are robust across random initialisations;
+\item a comparison across four sub-periods shows that the main findings are not driven by a specific part of the sample;
+\item the normalization of the distance measures is now described precisely and consistently between text and figure;
+\item the Conclusion has been made consistent with the Results and no longer suggests a predictive role of communication.
+\end{itemize}
+
+
+
+\vspace*{0.3cm}
+\begin{flushright}
+Yours sincerely,\\\medskip
+
+Nauel Serraino, Paola Zuccolotto and Riccardo Ricciardi
+\end{flushright}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{center} \textbf{Reply to Reviewer 1} \end{center}
+\vspace{0.5cm}
+%
+%
+The revised manuscript is much improved, and the authors have addressed most of the concerns raised in the first review. The added checks on the TWEC method, the comparison of different weighting choices, the broader literature review, and the new section linking the results to economic conditions all improve the paper. However, a few points still need attention before publication.
+\\
+\\ \revrepl{We thank the reviewer for the careful reading of our manuscript and for the constructive comments, which we address point by point below.}\\
+\noindent\rule{15cm}{0.4pt}
+
+1. The paper still does not fully document how topics are assigned to the final labels. The authors state that Appendix Table A4 reports both the amount of material left without a label and how the original BERTopic topics were grouped into the 11 final categories. However, Table A4 does not appear to include this information. The paper should report how much content remained unlabeled and, ideally, show how the original topics were assigned to the final categories. A small manual check of the automatic labels would also be helpful.
+\\
+{\color{orange}
+We thank the reviewer for pointing this out, and we apologise for the inaccuracy in our previous reply, since the table did not include this information. The label assignment table (now Table~A5, previously Table~A4, as a new table has been added to the Appendix) has been extended accordingly, and it is referenced in Section~3.4, where the label assignment procedure is described.
+
+Content can remain without a label at two stages of the pipeline. First, HDBSCAN assigns documents that cannot be confidently placed in any cluster to a noise class (topic $=-1$); these amount to 17,693 of the 35,392 documents (49.99\%). Second, among the 201 topics extracted by BERTopic, 34 have a similarity to every predefined label below the threshold $\tau^* = 0.30$ and remain unlabeled; they contain 2,292 documents, i.e. 12.9\% of the clustered documents. Overall, 15,407 documents (43.53\% of the corpus) are assigned to one of the 11 categories and enter the analysis. Table~A5 now reports all these quantities.
+}
+\\
+\noindent\rule{15cm}{0.4pt}
+
+2. The checks on the results are stronger than before, but they do not fully show BERTopic's stability. The TWEC checks using different random seeds and parameter choices are convincing. For BERTopic, however, the authors test different parameter settings while keeping the random setting fixed. A simple check showing that the main BERTopic results are similar across different random runs would address this point.
+\\
+{\color{orange}
+We thank the reviewer for this suggestion. We have re-fitted BERTopic under the same five random seeds used for the TWEC check (1, 42, 456, 789, 1000). Only the UMAP \texttt{random\_state} is varied, since HDBSCAN and the c-TF-IDF topic representation are deterministic and the document embeddings are fixed; the threshold $\tau^*$ is kept at its production value, so that any difference can only arise from the random initialisation. Each run then goes through the same label assignment as the main analysis, and the runs are compared pairwise on the main BERTopic outputs.
+
+The topic distributions are stable across runs. Yearly category shares are strongly correlated (mean Pearson $r = 0.959$, median $0.963$), and so are the rankings of the categories by prevalence for the Fed (mean Spearman $\rho = 0.889$, median $0.909$) and for the ECB (mean $\rho = 0.819$, median $0.815$). The production run (seed $=1$) is exactly reproduced. In Section~3.4 we now describe this check and summarise its results, which are reported in full in the new Appendix Table~A2.
+}
+\\
+\noindent\rule{15cm}{0.4pt}
+
+3. The discussion of possible differences in speech composition is useful, but this issue remains unresolved. The authors explain why dividing the data too finely may weaken the analysis, and they also show that speech-type labels are not fully comparable across the ECB and the Fed. However, the earlier concern also covered speaker composition and differences across time periods. In particular, I do not see a clear check showing whether the main findings hold in different parts of the sample period. A simple comparison across major sub-periods, or a clearer explanation of why this cannot be done reliably, would improve the paper.
+\\
+{\color{orange}
+We thank the reviewer for this comment. We first note that, unlike stratification by speaker role or speech type, a comparison across sub-periods does not require training TWEC on additional, smaller sub-corpora, because all measures in the paper are already computed at yearly resolution, with one TWEC slice per year. A sub-period comparison therefore amounts to aggregating yearly results, and can be carried out simply. We have done so for the ECB--Fed semantic divergence, averaging the yearly distances over four sub-periods aligned with the major episodes already marked in our figures: 2000--2007 (pre-GFC), 2008--2012 (GFC and euro-area crisis), 2013--2019 (low-rate period) and 2020--2025 (COVID and inflation surge). Table~\ref{tab:subperiods} reports the resulting divergence ranks.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrrrr}
+\toprule
+Topic & 2000--2007 & 2008--2012 & 2013--2019 & 2020--2025 & Full sample \\
+\midrule
+Industries           &  2 &  1 &  1 &  1 &  1 \\
+Fiscal Policy        &  3 &  2 &  2 &  4 &  2 \\
+International Trade  &  4 &  3 &  3 &  2 &  3 \\
+Climate Change       &  1 &  8 &  5 &  9 &  4 \\
+Inequality           &  6 &  5 &  4 &  3 &  5 \\
+Inflation            &  9 &  4 &  6 &  6 &  6 \\
+Employment           &  5 &  9 &  9 &  5 &  7 \\
+Forward Guidance     &  7 &  6 &  7 &  8 &  8 \\
+Behavioral Economics &  8 &  7 &  8 &  7 &  9 \\
+Financial Markets    & 10 & 11 & 10 & 10 & 10 \\
+Interest Rates       & 11 & 10 & 11 & 11 & 11 \\
+\midrule
+Spearman $\rho$ vs full sample & 0.87 & 0.85 & 0.96 & 0.81 & -- \\
+\bottomrule
+\end{tabular}
+\caption{Rank of ECB--Fed semantic divergence by sub-period (1 = most divergent), based on the mean of the yearly cosine distances between topic centroids within each sub-period.}
+\label{tab:subperiods}
+\end{table}
+
+The main findings hold in every sub-period. \textit{Interest Rates} and \textit{Financial Markets} are the two least divergent topics throughout the sample, \textit{Industries} is the most divergent topic in three of the four sub-periods (second in 2000--2007), and \textit{Fiscal Policy} and \textit{International Trade} remain among the most divergent topics in all of them. The sub-period rankings are strongly correlated with the full-sample ranking (Spearman $\rho$ between 0.81 and 0.96). The only notable exception is \textit{Climate Change}, whose divergence is concentrated in 2000--2007, when the ECB was virtually the only institution addressing the topic, and which is among the less divergent topics afterwards, as already discussed in Section~4.2. We have added a sentence summarising this check to Section~4.2.
+}
+\\
+\noindent\rule{15cm}{0.4pt}
+
+4. The normalization used for the distance measures should be clarified. Section 4.2 says that distances are normalized ``column-wise (per year),'' while Figure 6 refers to the same results as ``row-normalized.'' The authors should clearly state exactly how the normalization is done and correct any inconsistency between the text and the figure.
+\\
+{\color{orange}
+We thank the reviewer for spotting this inconsistency. The text was correct. In Figure~6a, the distances are min-max normalized within each year, i.e.\ each column of the heatmap is rescaled to $[0,1]$ across topics, while the subcaption erroneously read ``row-normalized''. We have corrected the subcaption to ``column-normalized'' and made the description in Section~4.2 explicit for both panels. Distances are now described as min-max normalized column-wise (per year, i.e.\ across topics within each year) in Figure~6a, and globally (across all topics and years) in Figure~6b.
+}
+\\
+\noindent\rule{15cm}{0.4pt}
+
+5. Two statements in the conclusion should be revised. First, the Results section identifies Industries as the topic with the greatest overall difference between the ECB and the Fed, while the Conclusion still describes Climate Change as the most divergent topic. These statements should be made consistent. Second, the Conclusion refers to ``subsequent changes'' and a possible ``predictive role'' of communication, but the reported regressions examine variables measured in the same period rather than future outcomes. The wording should therefore be changed to describe an association unless the authors add an analysis that directly tests prediction.
+\\
+{\color{orange}
+We thank the reviewer for both observations and have revised the Conclusion (Section~5) accordingly. The intended point was that \textit{Climate Change}, despite being a global challenge, is among the most divergent topics, in contrast with the general pattern of convergence on global issues; the previous wording overstated this by describing it as the most divergent topic. The sentence now reads that \textit{Climate Change} ``stands out as one of the most divergent topics, despite being a global challenge'', which is consistent with the Results.
+
+Moreover, we agree that the regressions relate variables measured in the same period. The sentence now states that semantic drift is associated with \emph{contemporaneous} changes in policy rates and unemployment, and the reference to a predictive role of communication has been removed.
+}
+\\
+\noindent\rule{15cm}{0.4pt}
+Overall, the revised manuscript is clearly stronger and most of the original concerns have been addressed. The remaining points are specific and should be manageable in a further revision.
+\\
+\\ \revrepl{We thank the reviewer again for the helpful comments, which have further improved the clarity and robustness of the paper.}\\
+
+\clearpage
+
+\end{document}

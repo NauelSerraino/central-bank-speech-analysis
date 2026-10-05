@@ -1,20 +1,20 @@
 import os
 import re
-import logging
 import pandas as pd
 import spacy
-import numpy as np
 from nltk.corpus import stopwords
 from nltk import download
 from gensim.models.phrases import Phrases, Phraser
 
 from develop.utils.paths import DATA
+from develop.utils.logger import LoggerManager
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+log_mgr = LoggerManager(name="load_speeches", log_file="00_load_speeches.log", clear_log=True)
+logger  = log_mgr.get_logger()
 
 download('stopwords')
 STOP_WORDS = set(stopwords.words('english'))
-nlp = spacy.load("en_core_web_sm", disable=["ner", "parser"])  # only tag + lemma
+nlp = spacy.load("en_core_web_sm", disable=["ner", "parser"])
 
 country_map = {"United States": "USA", "Euro area": "EU"}
 
@@ -31,19 +31,21 @@ def tokenize_paragraphs_batch(paragraphs):
 
 def tokenize_texts(df):
     """Split texts into paragraphs, then tokenize all in one batch."""
-    logging.info("Splitting into paragraphs...")
+    logger.info("Splitting into paragraphs...")
     all_paragraphs = []
-    doc_paragraph_indexes = []  # map doc -> list of paragraph indices
+    doc_paragraph_indexes = []
     for text in df["mistral_ocr"]:
         paragraphs = [re.sub(r"---\[PAGE_BREAK\]---", "", p.strip().lower())
                       for p in text.split("\n") if p.strip()]
         all_paragraphs.extend(paragraphs)
         doc_paragraph_indexes.append(list(range(len(all_paragraphs) - len(paragraphs), len(all_paragraphs))))
 
-    logging.info(f"Tokenizing {len(all_paragraphs)} paragraphs...")
+    logger.info(f"Tokenizing {len(all_paragraphs)} paragraphs from {len(df)} documents...")
     tokenized_paragraphs = tokenize_paragraphs_batch(all_paragraphs)
 
-    # Map back to documents
+    non_empty = sum(1 for t in tokenized_paragraphs if t)
+    logger.info(f"Tokenization done: {non_empty}/{len(all_paragraphs)} non-empty paragraphs")
+
     docs_paragraphs_tokens = []
     for idxs in doc_paragraph_indexes:
         docs_paragraphs_tokens.append([tokenized_paragraphs[i] for i in idxs])
@@ -53,13 +55,16 @@ def tokenize_texts(df):
 # Bigram model
 # -----------------------------
 def train_bigram_model(docs_paragraphs_tokens, min_count=50, threshold=50):
-    logging.info("Training bigram model...")
+    logger.info(f"Training bigram model (min_count={min_count}, threshold={threshold})...")
     all_paragraphs = [p for doc in docs_paragraphs_tokens for p in doc]
     phrases = Phrases(all_paragraphs, min_count=min_count, threshold=threshold)
-    return Phraser(phrases)
+    bigram = Phraser(phrases)
+    n_bigrams = len(bigram.phrasegrams)
+    logger.info(f"Bigram model trained: {n_bigrams} bigram phrases detected")
+    return bigram
 
 def apply_bigram_model_to_docs(docs_paragraphs_tokens, bigram_model):
-    logging.info("Applying bigram model to all docs...")
+    logger.info("Applying bigram model to all docs...")
     return [
         "\n\n".join(" ".join(bigram_model[para]) for para in doc)
         for doc in docs_paragraphs_tokens
@@ -70,6 +75,7 @@ def apply_bigram_model_to_docs(docs_paragraphs_tokens, bigram_model):
 # -----------------------------
 def save_texts_by_year_and_region(df, output_dir):
     os.makedirs(output_dir, exist_ok=True)
+    saved = []
     for country, code in country_map.items():
         sub_df = df[df['country'] == country]
         for year, group in sub_df.groupby(sub_df['date'].dt.year):
@@ -78,25 +84,38 @@ def save_texts_by_year_and_region(df, output_dir):
                 for doc in group['mistral_ocr_preprocessed']:
                     if doc.strip():
                         f.write(doc.strip() + "\n\n")
+            saved.append(f"{year}_{code} ({len(group)} docs)")
+    logger.info(f"Saved {len(saved)} corpus slices to {output_dir}:")
+    for s in saved:
+        logger.info(f"  {s}")
 
 # -----------------------------
 # Main
 # -----------------------------
-logging.info("Loading data...")
+logger.info("Loading dataset from HuggingFace...")
 df = pd.read_parquet("hf://datasets/istat-ai/ECB-FED-speeches/data/train-00000-of-00001.parquet")
 df['date'] = pd.to_datetime(df['date'])
 
-logging.info("Tokenizing corpus...")
+logger.info(f"Dataset loaded: {len(df)} speeches | "
+            f"years {df['date'].dt.year.min()}–{df['date'].dt.year.max()}")
+
+n_before = len(df)
+df = df[df['date'].dt.year >= 2000]
+logger.info(f"Filtered to 2000+: {len(df)} speeches kept, {n_before - len(df)} dropped")
+logger.info("Corpus breakdown by country:\n" +
+            df['country'].value_counts().to_string())
+
+logger.info("Tokenizing corpus...")
 docs_paragraphs_tokens = tokenize_texts(df)
 
-logging.info("Training bigram model...")
+logger.info("Training bigram model...")
 bigram_model = train_bigram_model(docs_paragraphs_tokens)
 
-logging.info("Applying bigram model...")
+logger.info("Applying bigram model...")
 df['mistral_ocr_preprocessed'] = apply_bigram_model_to_docs(docs_paragraphs_tokens, bigram_model)
 
-logging.info("Saving results...")
 output_folder = os.path.join(DATA, "00_preprocessed_corpus")
+logger.info("Saving corpus slices by year and region...")
 save_texts_by_year_and_region(df, output_folder)
 
-logging.info("Done.")
+logger.info("Preprocessing pipeline complete.")
